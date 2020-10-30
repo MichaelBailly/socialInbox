@@ -9,10 +9,8 @@
     "start": "node __sapper__/build"
   },
   "dependencies": {
-    "compression": "^1.7.1",
     "fastify": "^3.7.0",
     "fastify-express": "^0.3.2",
-    "polka": "next",
     "sirv": "^1.0.0"
   },
   "devDependencies": {
