@@ -1,3 +1,11 @@
+<script context="module">
+	export function preload({ params }, { user }) {
+		if (!user) {
+			this.redirect(302, `/login`);
+		}
+	}
+</script>
+
 <script>
 	import successkid from 'images/successkid.jpg';
 </script>

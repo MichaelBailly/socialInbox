@@ -1,13 +1,13 @@
 import fetch from 'node-fetch';
 
-export default async function login(serverBase, username, password) {
+export default async function getJWT(serverBase, cookie) {
   const queryOptions = {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ username, password })
+      'Content-Type': 'application/json',
+      'Cookie': cookie
+    }
   }
   const checkStatus = res => {
     if (res.ok) {
@@ -18,9 +18,11 @@ export default async function login(serverBase, username, password) {
     }
   };
 
-  const response = await fetch(`${serverBase}/api/login`, queryOptions);
+  const response = await fetch(`${serverBase}/api/jwt/generate`, queryOptions);
   const data = checkStatus(response);
-  const user = await data.json();
+  const jwtResponse = await data.json();
 
-  return { user, headers: response.headers };
+  console.log('JWT', jwtResponse);
+
+  return jwtResponse;
 }
