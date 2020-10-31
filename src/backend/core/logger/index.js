@@ -1,5 +1,5 @@
 import debug from 'debug';
 
-const logger = debug('socialbox');
+const logger = debug('sobox');
 
 export default logger;

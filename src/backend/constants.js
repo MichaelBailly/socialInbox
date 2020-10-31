@@ -11,7 +11,7 @@ export default {
     CLIENT_ID: 'sobox',
   },
   MONGODB: {
-    CONNECTION: 'mongodb+srv://localhost:27000/?poolSize=20&w=majority',
+    CONNECTION: 'mongodb://localhost:27000/?poolSize=20&w=majority',
     DATABASE: 'sobox',
   },
 };

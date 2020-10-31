@@ -6,15 +6,15 @@ const debug = logger.extend('mongodb');
 
 let dbPromise;
 
-const db = async () => {
-  const client = await getDbPRomise();
+const db = async() => {
+  const client = await getDbPromise();
 
   return client.db(CONSTANTS.MONGODB.DATABASE);
 };
 
-const getDbPRomise = () => {
+const getDbPromise = () => {
   if (!dbPromise) {
-    const client = new MongoClient(CONSTANTS.MONGODB.CONNECTION);
+    const client = new MongoClient(CONSTANTS.MONGODB.CONNECTION, { useUnifiedTopology: true });
     dbPromise = client.connect();
     dbPromise
       .then(() => debug('connected to server'))

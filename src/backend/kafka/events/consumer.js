@@ -37,16 +37,10 @@ export default async function run() {
   }
 }
 
-const onMessage = async ({ topic, partition, message }) => {
-  console.log(
-    {
-      key: message.key.toString(),
-      value: message.value.toString(),
-      headers: message.headers,
-    },
-    topic,
-    partition
-  );
+const onMessage = async({ topic, partition, message }) => {
+  const kafkaMessage = KafkaMessage.fromKafka(message.key.toString(), message.value.toString());
 
-  jwtTokenReceiver(topic, partition, message);
+  if (kafkaMessage.event() === 'jwt:token') {
+    jwtTokenReceiver(kafkaMessage);
+  }
 };
