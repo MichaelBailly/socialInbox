@@ -1,6 +1,6 @@
-import CONSTANTS from "../constants";
-import kafka from "./index";
-import logger from "../core/logger";
+import CONSTANTS from "../../constants";
+import kafka from "../index";
+import logger from "../../core/logger";
 
 const debug = logger.extend("kafka-producer");
 
@@ -24,7 +24,7 @@ export default async function send(kafkaMessage) {
   return connectPromise.then(() => {
     return producer
       .send({
-        topic: CONSTANTS.KAFKA.TOPIC,
+        topic: CONSTANTS.KAFKA.TOPICS.EVENTS,
         messages,
       })
       .then((response) => {

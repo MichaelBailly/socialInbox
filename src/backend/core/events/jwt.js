@@ -1,5 +1,5 @@
 import KafkaMessage from "../../kafka/kafka-message";
-import send from "../../kafka/producer";
+import send from "../../kafka/events/producer";
 
 const JWT_EVENT = "jwt:token";
 
