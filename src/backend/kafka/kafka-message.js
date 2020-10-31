@@ -27,6 +27,13 @@ export default class KafkaMessage {
     return this.object.payload;
   }
 
+  setEvent(eventName) {
+    const object = JSON.parse(JSON.stringify(this.object));
+    object.event = eventName;
+
+    return KafkaMessage.fromObject(this.key, object);
+  }
+
   static fromObject(key, object) {
     if (!object.event) {
       throw new Error('kafka message should have a message event');

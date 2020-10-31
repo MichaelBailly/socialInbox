@@ -31,10 +31,7 @@ export default function loginPost(server) {
         req.body.password
       );
       const cookie = headers.get('set-cookie').split('; ').shift();
-      console.log(cookie);
       const jwt = await getJWT(OPENPAAS_URL, cookie);
-      console.log('GOT JWT', jwt);
-      console.log(user);
       let userEmail;
       try {
         userEmail = findUserEmail(user);

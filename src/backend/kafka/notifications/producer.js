@@ -2,7 +2,7 @@ import CONSTANTS from '../../constants';
 import kafka from '../client';
 import logger from '../../core/logger';
 
-const debug = logger.extend('kafka-producer');
+const debug = logger.extend('kafka-notifications-producer');
 
 const producer = kafka.producer();
 
@@ -15,7 +15,7 @@ connectPromise
     throw e;
   });
 
-export default async function sendEvent(kafkaMessage) {
+export default async function sendNotification(kafkaMessage) {
   const messages = (Array.isArray(kafkaMessage)
     ? kafkaMessage
     : [kafkaMessage]
@@ -24,7 +24,7 @@ export default async function sendEvent(kafkaMessage) {
   return connectPromise.then(() => {
     return producer
       .send({
-        topic: CONSTANTS.KAFKA.TOPICS.EVENTS.NAME,
+        topic: CONSTANTS.KAFKA.TOPICS.NOTIFICATIONS,
         messages,
       })
       .then((response) => {

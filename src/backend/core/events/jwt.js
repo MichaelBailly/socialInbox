@@ -1,5 +1,6 @@
 import KafkaMessage from '../../kafka/kafka-message';
-import send from '../../kafka/events/producer';
+import sendEvent from '../../kafka/events/producer';
+import sendNotification from '../../kafka/notifications/producer';
 import db from '../../mongodb/index';
 import logger from '../logger/index';
 
@@ -17,27 +18,38 @@ export default function jwtEvent(userEmail, jwt) {
   };
   const kafkaMessage = KafkaMessage.fromObject(userEmail, message);
 
-  send(kafkaMessage);
+  sendEvent(kafkaMessage);
 }
 
 export async function jwtTokenReceiver(kafkaMessage) {
-  debug('storing JWT token in datastore');
-  const database = await db();
+  let notificationMessage;
 
-  const collection = database.collection('userinfos');
-  const response = await collection.updateOne(
-    { _id: kafkaMessage.user() },
-    {
-      $set: {
-        _id: kafkaMessage.user(),
-        token: kafkaMessage.payload().token,
+  try {
+    debug('storing JWT token in datastore');
+    const database = await db();
+    const collection = database.collection('userinfos');
+    const response = await collection.updateOne(
+      { _id: kafkaMessage.user() },
+      {
+        $set: {
+          _id: kafkaMessage.user(),
+          token: kafkaMessage.payload().token,
+        },
       },
-    },
-    {
-      upsert: true,
+      {
+        upsert: true,
+      }
+    );
+    if (response.upsertedCount !== 1 && response.modifiedCount !== 1 && response.matchedCount !== 1) {
+      debug('jwtTokenReceiver token storage failed: %O', response);
+      throw new Error('jwtTokenReceiver token storage failed: mongo upsertedCount is !== 1');
+    } else {
+      notificationMessage = kafkaMessage.setEvent(`${kafkaMessage.event()}:store:success`);
     }
-  );
-  if (response.upsertedCount !== 1) {
-    debug('jwtTokenReceiver token storage failed: %O', response);
+  } catch (e) {
+    debug('jwtTokenReceiver token storage failed: %O', e);
+    notificationMessage = kafkaMessage.setEvent(`${kafkaMessage.event()}:store:failed`);
   }
+
+  sendNotification(notificationMessage);
 }
