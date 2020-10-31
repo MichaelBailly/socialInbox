@@ -1,7 +1,13 @@
 export default {
   KAFKA: {
-    TOPICS: [{ EVENTS: "sobox" }, { NOTIFICATIONS: "sobox-notifs" }],
+    TOPICS: {
+      EVENTS: {
+        NAME: "sobox",
+        CONSUMER_GROUP: "sobox-events",
+      },
+      NOTIFICATIONS: "sobox-notifs",
+    },
     BROKERS: ["localhost:9093"],
-    CLIENT_ID: "socialbox",
+    CLIENT_ID: "sobox",
   },
 };

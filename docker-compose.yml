@@ -25,9 +25,16 @@ services:
       - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
     depends_on:
       - zookeeper
-
+  mongodb:
+    image: "mongo:4.2.10-bionic"
+    ports:
+      - "27000:27017"
+    volumes:
+      - "mongo_data:/data/db"
 volumes:
   zookeeper_data:
     driver: local
   kafka_data:
+    driver: local
+  mongo_data:
     driver: local
