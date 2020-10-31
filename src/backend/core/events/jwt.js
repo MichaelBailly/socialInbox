@@ -1,24 +1,21 @@
-import KafkaMessage from "../../kafka/kafka-message";
-import send from "../../kafka/events/producer";
+import KafkaMessage from '../../kafka/kafka-message';
+import send from '../../kafka/events/producer';
 
-const JWT_EVENT = "jwt:token";
+const JWT_EVENT = 'jwt:token';
 
-export default function jwtEvent(user, jwt) {
-  const email = findUserEmail(user);
+export default function jwtEvent(userEmail, jwt) {
   const message = {
     event: JWT_EVENT,
-    user: email,
+    user: userEmail,
     payload: {
       token: jwt,
     },
   };
-  const kafkaMessage = KafkaMessage.fromObject(email, message);
+  const kafkaMessage = KafkaMessage.fromObject(userEmail, message);
 
   send(kafkaMessage);
 }
 
-function findUserEmail(user) {
-  const accounts = [...user.accounts];
-  const emails = [...accounts.shift().emails];
-  return emails.shift();
+export function jwtTokenReceiver(topic, partition, message) {
+  console.log('here !');
 }

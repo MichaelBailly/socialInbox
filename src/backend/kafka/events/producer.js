@@ -1,17 +1,17 @@
-import CONSTANTS from "../../constants";
-import kafka from "../client";
-import logger from "../../core/logger";
+import CONSTANTS from '../../constants';
+import kafka from '../client';
+import logger from '../../core/logger';
 
-const debug = logger.extend("kafka-producer");
+const debug = logger.extend('kafka-producer');
 
-let producer = kafka.producer();
+const producer = kafka.producer();
 
 const connectPromise = producer.connect();
 
 connectPromise
-  .then(() => debug("connected"))
+  .then(() => debug('connected'))
   .catch((e) => {
-    debug("connection error %O", e);
+    debug('connection error %O', e);
     throw e;
   });
 
@@ -28,11 +28,11 @@ export default async function send(kafkaMessage) {
         messages,
       })
       .then((response) => {
-        debug("message send response: %O", response);
+        debug('message send response: %O', response);
         return response;
       })
       .catch((e) => {
-        debug("message send failed: %O", e);
+        debug('message send failed: %O', e);
         throw e;
       });
   });

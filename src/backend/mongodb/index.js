@@ -1,8 +1,8 @@
-import CONSTANTS from "../constants";
-import { MongoClient } from "mongodb";
-import logger from "../core/logger";
+import CONSTANTS from '../constants';
+import { MongoClient } from 'mongodb';
+import logger from '../core/logger';
 
-const debug = logger.extend("mongodb");
+const debug = logger.extend('mongodb');
 
 let dbPromise;
 
@@ -17,9 +17,9 @@ const getDbPRomise = () => {
     const client = new MongoClient(CONSTANTS.MONGODB.CONNECTION);
     dbPromise = client.connect();
     dbPromise
-      .then(() => debug("connected to server"))
+      .then(() => debug('connected to server'))
       .catch((e) => {
-        debug("problem connecting to server: %O", e);
+        debug('problem connecting to server: %O', e);
       });
   }
   return dbPromise;

@@ -5,8 +5,6 @@ import loginPost from './routes/proxy/login-post';
 import session from 'express-session';
 import sessionFileStore from 'session-file-store';
 
-
-
 const { PORT, NODE_ENV, OPENPAAS_URL } = process.env;
 const dev = NODE_ENV === 'development';
 
@@ -25,9 +23,9 @@ async function start() {
   server.use(
     sirv('static', { dev }),
     sapper.middleware({
-      session: req => ({
-        user: req.session && req.session.user
-      })
+      session: (req) => ({
+        user: req.session && req.session.user,
+      }),
     })
   );
   // server.use('/app', sapper.middleware());
@@ -44,10 +42,10 @@ function getSessionMiddleware() {
     resave: false,
     saveUninitialized: true,
     cookie: {
-      maxAge: 31536000
+      maxAge: 31536000,
     },
     store: new FileStore({
-      path: dev ? `.sessions` : `/tmp/sessions`
-    })
+      path: dev ? `.sessions` : `/tmp/sessions`,
+    }),
   });
 }
