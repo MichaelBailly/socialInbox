@@ -4,11 +4,11 @@ export default async function getJWT(serverBase, cookie) {
   const queryOptions = {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      'Cookie': cookie
-    }
-  }
+      Cookie: cookie,
+    },
+  };
   const checkStatus = res => {
     if (res.ok) {
       // res.status >= 200 && res.status < 300

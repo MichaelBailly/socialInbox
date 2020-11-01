@@ -28,7 +28,6 @@ export default async function sendNotification(kafkaMessage) {
         messages,
       })
       .then((response) => {
-        debug('message send response: %O', response);
         return response;
       })
       .catch((e) => {
