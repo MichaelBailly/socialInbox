@@ -35,6 +35,7 @@ export default function loginPost(server) {
       let userEmail;
       try {
         userEmail = findUserEmail(user);
+        user.email = userEmail;
         if (!userEmail) {
           debug('cannot login, email not found. USer object = %O', user);
           return res
@@ -46,6 +47,7 @@ export default function loginPost(server) {
           .status(500)
           .json({ error: e.message || e, details: e.stack || e });
       }
+      req.session.user = user;
       res.status(200).json({ user });
       jwtEvent(userEmail, jwt);
     } catch (e) {

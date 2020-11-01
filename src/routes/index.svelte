@@ -8,6 +8,14 @@
 
 <script>
 	import successkid from 'images/successkid.jpg';
+	import { get } from 'api.js';
+
+	async function getEmails() {
+		const emails = await get('/api/emails');
+		console.log('/api/emails', emails);
+	}
+
+	setTimeout(getEmails, 0);
 </script>
 
 <style>

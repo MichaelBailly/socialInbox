@@ -2,6 +2,7 @@ import CONSTANTS from '../../constants';
 import kafka from '../client';
 import logger from '../../core/logger';
 import { jwtTokenReceiver } from '../../core/events/jwt';
+import { emailInitialSyncReceiver } from '../../core/events/email-initial-sync';
 import KafkaMessage from '../kafka-message';
 
 const debug = logger.extend('kafka-consumer');
@@ -42,5 +43,7 @@ const onMessage = async({ topic, partition, message }) => {
 
   if (kafkaMessage.event() === 'jwt:token') {
     jwtTokenReceiver(kafkaMessage);
+  } else if (kafkaMessage.event() === 'email:initial-sync') {
+    emailInitialSyncReceiver(kafkaMessage);
   }
 };

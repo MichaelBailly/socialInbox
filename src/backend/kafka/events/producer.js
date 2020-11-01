@@ -28,6 +28,7 @@ export default async function sendEvent(kafkaMessage) {
         messages,
       })
       .then((response) => {
+        debug(`messages sent success (${messages.length} messages)`);
         return response;
       })
       .catch((e) => {

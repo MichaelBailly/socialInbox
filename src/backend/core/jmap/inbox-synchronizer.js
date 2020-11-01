@@ -1,6 +1,9 @@
 import CONSTANTS from '../../constants';
 import createConsumer from '../../kafka/notifications/consumer';
 import JmapSynchronizer from './jmap-synchronizer';
+import logger from '../logger/index';
+
+const debug = logger.extend('core:jmap:inbox-synchronizer');
 
 const synchronizers = new Map();
 
@@ -12,6 +15,7 @@ export default async function startConsumer() {
 
     const user = kafkaMessage.user();
     if (synchronizers.has(user)) {
+      debug(`Synchronizer for user ${user} already exists, running=${synchronizers.get(user).running}, initialSync=${synchronizers.get(user).initialSync}`);
       return;
     }
 

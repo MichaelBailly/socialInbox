@@ -2,6 +2,7 @@ import sirv from 'sirv';
 import * as sapper from '@sapper/server';
 import express from 'express';
 import loginPost from './routes/proxy/login-post';
+import apiEmailRoutes from './routes/api/email';
 import session from 'express-session';
 import sessionFileStore from 'session-file-store';
 
@@ -18,10 +19,13 @@ async function start() {
 
   server.use(express.json());
 
+  server.use(
+    getSessionMiddleware(),
+    sirv('static', { dev }));
+
   loginPost(server);
 
   server.use(
-    sirv('static', { dev }),
     sapper.middleware({
       session: (req) => ({
         user: req.session && req.session.user,
@@ -36,6 +40,9 @@ export default start;
 
 function getSessionMiddleware() {
   const FileStore = sessionFileStore(session);
+  const fileStore = new FileStore({
+    path: dev ? '.sessions' : '/tmp/sessions',
+  });
 
   const sessionInstance = session({
     secret: 'the-secret-key',
@@ -44,8 +51,8 @@ function getSessionMiddleware() {
     cookie: {
       maxAge: 31536000,
     },
-    store: new FileStore({
-      path: dev ? `.sessions` : `/tmp/sessions`,
-    }),
+    store: fileStore,
   });
+
+  return sessionInstance;
 }

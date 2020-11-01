@@ -71,15 +71,16 @@ export default class JmapSynchronizer {
         return false;
       }
       return true;
-    }).map((email) => {
-      return KafkaMessage.fromObject(this.email, {
-        user: this.email,
-        event: 'email:initial-sync',
-        payload: email,
+    })
+      .map((email) => {
+        return KafkaMessage.fromObject(this.email, {
+          user: this.email,
+          event: 'email:initial-sync',
+          payload: email,
+        });
       });
-    });
     if (kafkaMessages.length) {
-      this.debug('sending mails to kafka as events %i', kafkaMessages.length);
+      this.debug('sending %i mails to kafka (event=email:initial-sync)', kafkaMessages.length);
       sendEvent(kafkaMessages);
     }
 
