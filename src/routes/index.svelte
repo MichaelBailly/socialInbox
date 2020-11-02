@@ -7,11 +7,12 @@
 </script>
 
 <script>
-	import successkid from 'images/successkid.jpg';
 	import { get } from 'api.js';
+	import { emails, fetchEmails, isLoading } from '../libs/emails/emailProvider';
 
 	async function getEmails() {
-		const emails = await get('/api/emails');
+		fetchEmails();
+		console.log(emails);
 		console.log('/api/emails', emails);
 	}
 
@@ -19,7 +20,7 @@
 </script>
 
 <style>
-	h1, figure, p {
+	h1, p {
 		text-align: center;
 		margin: 0 auto;
 	}
@@ -31,15 +32,6 @@
 		margin: 0 0 0.5em 0;
 	}
 
-	figure {
-		margin: 0 0 1em 0;
-	}
-
-	img {
-		width: 100%;
-		max-width: 400px;
-		margin: 0 0 1em 0;
-	}
 
 	p {
 		margin: 1em auto;
@@ -53,14 +45,12 @@
 </style>
 
 <svelte:head>
-	<title>Sapper project template</title>
+	<title>SoBox: your Social Inbox</title>
 </svelte:head>
 
-<h1>Great success!</h1>
-
-<figure>
-	<img alt="Success Kid" src="{successkid}">
-	<figcaption>Have fun with Sapper!</figcaption>
-</figure>
+<h1>Great success! {$emails.length}</h1>
+	{#each $emails as email}
+	<div>{email.email.subject}</div>
+	{/each}
 
 <p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
