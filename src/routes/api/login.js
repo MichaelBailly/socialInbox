@@ -36,7 +36,7 @@ export async function post(req, res) {
       userEmail = findUserEmail(user);
       user.email = userEmail;
       if (!userEmail) {
-        debug('cannot login, email not found. USer object = %O', user);
+        debug('cannot login, email not found. User object = %O', user);
         return res
           .status(400)
           .json({ error: 'no email found on OpenPaaS profile' });
@@ -48,7 +48,7 @@ export async function post(req, res) {
     }
     req.session.user = user;
     res.status(200).json({ user });
-    jwtEvent(userEmail, jwt);
+    jwtEvent({ id: user._id, email: user.email }, jwt);
   } catch (e) {
     res.status(401).json({ error: e.message || e, details: e.stack || e });
   }

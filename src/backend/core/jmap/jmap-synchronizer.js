@@ -8,12 +8,12 @@ import sendEvent from '../../kafka/events/producer';
 import CONSTANTS from '../../constants';
 
 export default class JmapSynchronizer {
-  constructor({ jmapSessionURL, jmapURL, token, email }) {
+  constructor({ jmapSessionURL, jmapURL, token, user }) {
     this.jmapSessionURL = jmapSessionURL;
     this.jmapURL = jmapURL;
     this.token = token;
-    this.email = email;
-    this.debug = logger.extend(`synchronizer[${this.email}]`);
+    this.user = user;
+    this.debug = logger.extend(`synchronizer[${this.user.id}/${this.user.email}]`);
 
     // state
     this.running = false;
@@ -73,8 +73,8 @@ export default class JmapSynchronizer {
       return true;
     })
       .map((email) => {
-        return KafkaMessage.fromObject(this.email, {
-          user: this.email,
+        return KafkaMessage.fromObject(this.user.id, {
+          user: this.user,
           event: 'email:initial-sync',
           payload: email,
         });

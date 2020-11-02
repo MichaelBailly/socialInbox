@@ -15,7 +15,7 @@ export async function fetchAccount(sessionUrl, token) {
       (a) => session.accounts[a].name === email
     ).shift();
     return account;
-  } catch(e) {
+  } catch (e) {
     console.log('ERROR', e);
   }
 }

@@ -8,31 +8,32 @@ const debug = logger.extend('events:jwt');
 
 const JWT_EVENT = 'jwt:token';
 
-export default function jwtEvent(userEmail, jwt) {
+export default function jwtEvent(user, jwt) {
   const message = {
     event: JWT_EVENT,
-    user: userEmail,
+    user: user,
     payload: {
       token: jwt,
     },
   };
-  const kafkaMessage = KafkaMessage.fromObject(userEmail, message);
+  const kafkaMessage = KafkaMessage.fromObject(user.id, message);
 
   sendEvent(kafkaMessage);
 }
 
 export async function jwtTokenReceiver(kafkaMessage) {
   let notificationMessage;
-
+  const user = kafkaMessage.user();
   try {
     debug('storing JWT token in datastore');
     const database = await db();
     const collection = database.collection('userinfos');
     const response = await collection.updateOne(
-      { _id: kafkaMessage.user() },
+      { _id: user.id },
       {
         $set: {
-          _id: kafkaMessage.user(),
+          _id: user.id,
+          email: user.email,
           token: kafkaMessage.payload().token,
         },
       },

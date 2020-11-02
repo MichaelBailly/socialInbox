@@ -14,8 +14,8 @@ export default async function startConsumer() {
     }
 
     const user = kafkaMessage.user();
-    if (synchronizers.has(user)) {
-      debug(`Synchronizer for user ${user} already exists, running=${synchronizers.get(user).running}, initialSync=${synchronizers.get(user).initialSync}`);
+    if (synchronizers.has(user.id)) {
+      debug(`Synchronizer for user ${user.id}(${user.email}) already exists, running=${synchronizers.get(user.id).running}, initialSync=${synchronizers.get(user.id).initialSync}`);
       return;
     }
 
@@ -23,9 +23,9 @@ export default async function startConsumer() {
       jmapSessionURL: CONSTANTS.JMAP.SESSION,
       jmapURL: CONSTANTS.JMAP.JMAP,
       token: kafkaMessage.payload().token,
-      email: kafkaMessage.user(),
+      user,
     });
     jmapSynchronizer.start();
-    synchronizers.set(kafkaMessage.user(), jmapSynchronizer);
+    synchronizers.set(user.id, jmapSynchronizer);
   });
 }

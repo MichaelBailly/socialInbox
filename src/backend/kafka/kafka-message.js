@@ -19,6 +19,14 @@ export default class KafkaMessage {
     return this.object.user;
   }
 
+  userId() {
+    return this.object.userId;
+  }
+
+  userEmail() {
+    return this.object.userEmail;
+  }
+
   event() {
     return this.object.event;
   }
@@ -41,6 +49,19 @@ export default class KafkaMessage {
     if (!object.payload) {
       throw new Error('kafka message should have a message payload');
     }
+
+    if (!object.user) {
+      throw new Error('kafka message should have a message user');
+    }
+
+    if (!object.user.id) {
+      throw new Error('kafka message user should have an id property');
+    }
+
+    if (!object.user.email) {
+      throw new Error('kafka message user should have an email property');
+    }
+
     if (!key || !(typeof key === 'string')) {
       throw new Error('kafka message should have a key');
     }
@@ -49,6 +70,7 @@ export default class KafkaMessage {
       event: object.event,
       payload: object.payload,
       user: object.user,
+      userEmail: object.userEmail,
     });
   }
 

@@ -21,11 +21,11 @@ export async function get(req, res) {
   const limit = Number(req.query.limit) || DEFAULT_LIMIT;
   const offset = Number(req.query.offset) || DEFAULT_OFFSET;
 
-  const email = req.session.user.email;
+  const id = req.session.user._id;
   try {
     const database = await db();
     const collection = database.collection('emails');
-    const emails = await collection.find({ users: email }).sort({ receivedAt: -1 }).skip(offset).limit(limit).toArray();
+    const emails = await collection.find({ users: id }).sort({ receivedAt: -1 }).skip(offset).limit(limit).toArray();
 
     debug('email fetch response OK, returning %i emails', emails.length);
     return res.status(200).json({ emails });
