@@ -1,8 +1,6 @@
 import sirv from 'sirv';
 import * as sapper from '@sapper/server';
 import express from 'express';
-import loginPost from './routes/proxy/login-post';
-import apiEmailRoutes from './routes/api/email';
 import session from 'express-session';
 import sessionFileStore from 'session-file-store';
 
@@ -23,8 +21,6 @@ async function start() {
     getSessionMiddleware(),
     sirv('static', { dev }));
 
-  loginPost(server);
-
   server.use(
     sapper.middleware({
       session: (req) => ({
@@ -32,7 +28,6 @@ async function start() {
       }),
     })
   );
-  // server.use('/app', sapper.middleware());
   server.listen(PORT);
 }
 
