@@ -51,45 +51,47 @@ export default class JmapSynchronizer {
     this.launchInitialSync(accountId, inboxId);
   }
 
-  async launchInitialSync(accountId, mailboxId, opts = {}) {
+  async launchInitialSync(accountId, mailboxId) {
     this.initialSync = true;
     // get the mails ordered by receivedAt desc and stop
     // on mails being 1m+ old
-    const oneMonthAgo = opts.oneMonthAgo || sub(new Date(), { months: 1 });
-    const position = opts.position || 0;
+    const oneMonthAgo = sub(new Date(), { months: 1 });
+    let position = 0;
     const limit = CONSTANTS.JMAP.SYNC_EMAILS_PER_REQUESTS;
-    const emails = await fetchEmails(this.jmapURL, this.token, accountId, mailboxId, position, limit);
     let endLoop = false;
 
     this.debug('starting initial sync, %i', position);
 
-    const kafkaMessages = emails.filter((email) => {
-      const date = parseISO(email.receivedAt);
-      if (isBefore(date, oneMonthAgo)) {
-        console.log('email is more that one month ago old, ignoring');
-        endLoop = true;
-        return false;
-      }
-      return true;
-    })
-      .map((email) => {
-        return KafkaMessage.fromObject(this.user.id, {
-          user: this.user,
-          event: 'email:initial-sync',
-          payload: email,
+    while (!endLoop) {
+      this.debug(`fetching emails, position=${position}, limit=${limit}`);
+      const emails = await fetchEmails(this.jmapURL, this.token, accountId, mailboxId, position, limit);
+
+      const kafkaMessages = emails.filter((email) => {
+        const date = parseISO(email.receivedAt);
+        if (isBefore(date, oneMonthAgo)) {
+          this.debug('email is more that one month ago old, ignoring');
+          endLoop = true;
+          return false;
+        }
+        return true;
+      })
+        .map((email) => {
+          return KafkaMessage.fromObject(this.user.id, {
+            user: this.user,
+            event: 'email:initial-sync',
+            payload: email,
+          });
         });
-      });
-    if (kafkaMessages.length) {
-      this.debug('sending %i mails to kafka (event=email:initial-sync)', kafkaMessages.length);
-      sendEvent(kafkaMessages);
+
+      if (kafkaMessages.length) {
+        this.debug('sending %i mails to kafka (event=email:initial-sync)', kafkaMessages.length);
+        sendEvent(kafkaMessages);
+      } else {
+        endLoop = true;
+      }
+      position = position + limit;
     }
 
-    if (!endLoop && kafkaMessages.length) {
-      await this.launchInitialSync(accountId, mailboxId, {
-        oneMonthAgo,
-        position: position + limit,
-      });
-    }
     this.debug('initial synchronization complete');
     this.initialSync = false;
   }
