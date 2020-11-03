@@ -42,8 +42,10 @@ export async function emailInitialSyncReceiver(kafkaMessage) {
   const emailDocument = {
     _id: email.id,
     users: [user.id],
+    usersShared: [],
+    activity: [],
     email: sanitizedEmail,
-    lastModified: parseISO(email.receivedAt),
+    lastModified: sanitizedEmail.receivedAt,
     userState: {
       [user.id]: userState(sanitizedEmail),
     },

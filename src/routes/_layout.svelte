@@ -4,15 +4,24 @@
 	export let segment;
 </script>
 
-<style>
-	main {
-		position: relative;
-		max-width: 56em;
-		background-color: white;
-		padding: 2em;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
+<style global lang="less">
+.flex-row {
+	flex-direction: row;
+}
+
+body, html, #sapper {
+	height: 100%;
+	overflow-y: auto;
+}
+
+#sapper {
+	overflow-y: auto;
+}
+main {
+	height: calc(100% - 60px);
+	overflow-y: auto;
+	overflow-x: hidden;
+}
 </style>
 
 <Nav {segment}/>

@@ -17,9 +17,10 @@
     "kafkajs": "^1.14.0",
     "mongodb": "^3.6.2",
     "node-fetch": "^2.6.1",
-    "purecss": "^2.0.3",
+    "qs": "^6.9.4",
     "session-file-store": "^1.5.0",
-    "sirv": "^1.0.0"
+    "sirv": "^1.0.0",
+    "svelte-select": "^3.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -37,10 +38,14 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
+    "less": "^3.12.2",
+    "postcss": "^8.1.4",
     "rollup": "^2.3.4",
     "rollup-plugin-svelte": "^6.0.0",
     "rollup-plugin-terser": "^7.0.0",
     "sapper": "^0.28.0",
-    "svelte": "^3.17.3"
+    "sass": "^1.28.0",
+    "svelte": "^3.17.3",
+    "svelte-preprocess": "^4.5.2"
   }
 }

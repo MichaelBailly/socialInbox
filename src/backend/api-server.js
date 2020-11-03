@@ -46,7 +46,7 @@ function getSessionMiddleware() {
     cookie: {
       maxAge: 31536000,
     },
-//    store: fileStore,
+    store: fileStore,
   });
 
   return sessionInstance;
