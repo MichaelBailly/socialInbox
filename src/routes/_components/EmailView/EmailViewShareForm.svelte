@@ -1,5 +1,5 @@
 <script>
-import { get } from 'api';
+import { get, post } from 'api';
 import Select from 'svelte-select';
 import EmailViewShareModal from "./EmailViewShareModal.svelte";
 import { openModal } from '../../../libs/modal/modalService';
@@ -10,6 +10,7 @@ let acccessListIds = email.users.concat(email.usersShared);
 let accessList = [];
 let loading = false;
 let selectedValue = null;
+let shareRequestActive = false;
 const noOptionsMessage = 'No user';
 
 // ------------------ SELECT SPECIFIC VARIABLES
@@ -55,9 +56,24 @@ const displayUser = user => {
   };
 }
 
+const share = async () => {
+  if (shareRequestActive) {
+    return false;
+  }
+  shareRequestActive = true;
+  try {
+    const response = await post(`/api/emails/${email._id}/share`, {
+      userIds: selectedValue.map(u => u._id)
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  shareRequestActive = false;
+};
+
 const openDialog = () => {
   openModal()(EmailViewShareModal, {
-    onYes: () => { console.log('Yes clicked !' )},
+    onYes: share,
     users: selectedValue,
   },{
     closeButton: false
@@ -92,7 +108,7 @@ init();
       <Select {loadOptions} {optionIdentifier} {getOptionLabel} {getSelectionLabel} {noOptionsMessage} bind:selectedValue isMulti="true" placeholder="Add users..."></Select>
       <br />
       <div class="has-text-right">
-        <button class="button" disabled={!selectedValue || !selectedValue.length} on:click|preventDefault="{openDialog}">Add</button>
+        <button class="button" disabled={!selectedValue || !selectedValue.length} on:click="{openDialog}" class:is-loading={shareRequestActive}>Add</button>
       </div>
   </div>
 </div>

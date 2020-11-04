@@ -6,8 +6,8 @@ import KafkaMessage from '../kafka-message';
 const debugNotif = logger.extend('kafka-notification-consumer');
 
 export default function createConsumer(groupId, onMessage) {
-  run(groupId, onMessage);
-};
+  return run(groupId, onMessage);
+}
 
 async function run(groupId, onMessage) {
   const debug = debugNotif.extend(groupId);
@@ -32,8 +32,11 @@ async function run(groupId, onMessage) {
   try {
     debug('starting message consuming');
     await consumer.run({
-      eachMessage: async({ topic, partition, message }) => {
-        const kafkaMessage = KafkaMessage.fromKafka(message.key.toString(), message.value.toString());
+      eachMessage: async ({ topic, partition, message }) => {
+        const kafkaMessage = KafkaMessage.fromKafka(
+          message.key.toString(),
+          message.value.toString()
+        );
         return onMessage({ topic, partition, message, kafkaMessage });
       },
     });

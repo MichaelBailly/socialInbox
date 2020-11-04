@@ -7,23 +7,33 @@
 </script>
 
 <script>
+	import { onMount } from 'svelte';
+	import { connect } from '../libs/sse';
 	import { emails, fetchEmails, isLoading } from '../libs/emails/emailProvider';
 	import EmailListItem from './_components/EmailListItem.svelte';
 	import EmailView from './_components/EmailView.svelte';
 	import Modal from '../components/Modal.svelte';
+
+	let emailDisplayed = null;
 
 	async function getEmails() {
 		fetchEmails();
 		console.log(emails);
 	}
 
-	getEmails();
-
-	let emailDisplayed = null;
-
 	const display = (event) => {
 		emailDisplayed = event.detail;
 	}
+
+	onMount(() => {
+		connect();
+	});
+
+	getEmails();
+
+
+
+
 
 </script>
 

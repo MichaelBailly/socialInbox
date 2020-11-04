@@ -3,6 +3,7 @@ import kafka from '../client';
 import logger from '../../core/logger';
 import { jwtTokenReceiver } from '../../core/events/jwt';
 import { emailInitialSyncReceiver } from '../../core/events/email-initial-sync';
+import { emailShareReceiver } from '../../core/events/email/share';
 import KafkaMessage from '../kafka-message';
 
 const debug = logger.extend('kafka-consumer');
@@ -38,12 +39,17 @@ export default async function run() {
   }
 }
 
-const onMessage = async({ topic, partition, message }) => {
-  const kafkaMessage = KafkaMessage.fromKafka(message.key.toString(), message.value.toString());
+const onMessage = async ({ topic, partition, message }) => {
+  const kafkaMessage = KafkaMessage.fromKafka(
+    message.key.toString(),
+    message.value.toString()
+  );
 
   if (kafkaMessage.event() === 'jwt:token') {
     jwtTokenReceiver(kafkaMessage);
   } else if (kafkaMessage.event() === 'email:initial-sync') {
     emailInitialSyncReceiver(kafkaMessage);
+  } else if (kafkaMessage.event() === 'email:share') {
+    emailShareReceiver(kafkaMessage);
   }
 };
