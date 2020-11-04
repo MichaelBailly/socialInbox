@@ -8,6 +8,7 @@ let acccessListIds = email.users.concat(email.usersShared);
 let accessList = [];
 let loading = false;
 let selectedValue = null;
+const noOptionsMessage = 'No user';
 
 // ------------------ SELECT SPECIFIC VARIABLES
 const optionIdentifier = '_id';
@@ -16,6 +17,9 @@ const getOptionLabel = (option) => option.displayName;
 const getSelectionLabel = (option) => option.displayName;
 
 const loadOptions = async (q) => {
+  if (!q || q.length < 3) {
+    return Promise.resolve([]);
+  }
   const users = await get('/api/users', null, { qs: { q } });
   return users.map(displayUser);
 };
@@ -74,7 +78,7 @@ init();
   </div>
   <hr class="dropdown-divider">
   <div class="dropdown-item">
-      <Select {loadOptions} {optionIdentifier} {getOptionLabel} {getSelectionLabel} bind:selectedValue isMulti="true" placeholder="Add users..."></Select>
+      <Select {loadOptions} {optionIdentifier} {getOptionLabel} {getSelectionLabel} {noOptionsMessage} bind:selectedValue isMulti="true" placeholder="Add users..."></Select>
       <br />
       <div class="has-text-right">
         <button class="button is-link" disabled={!selectedValue || !selectedValue.length}>Add</button>
@@ -82,7 +86,7 @@ init();
   </div>
 </div>
 
-<style>
+<style lang="less">
   .dropdown-content {
     width: 30rem;
   }
