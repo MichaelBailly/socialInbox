@@ -1,6 +1,8 @@
 <script>
 import { get } from 'api';
 import Select from 'svelte-select';
+import EmailViewShareModal from "./EmailViewShareModal.svelte";
+import { openModal } from '../../../libs/modal/modalService';
 
 export let email;
 
@@ -35,23 +37,32 @@ const init = async () => {
 };
 
 const displayUser = user => {
-    if (user.displayName) {
-      return {
-        _id: user._id,
-        displayName: user.displayName
-      };
-    }
-    if (user.firstname || user.lastname) {
-      return {
-        _id: user._id,
-        displayName: `${user.firstname || ''} ${user.lastname || ''}`
-      };
-    }
+  if (user.displayName) {
     return {
       _id: user._id,
-      displayName: user.email
+      displayName: user.displayName
     };
   }
+  if (user.firstname || user.lastname) {
+    return {
+      _id: user._id,
+      displayName: `${user.firstname || ''} ${user.lastname || ''}`
+    };
+  }
+  return {
+    _id: user._id,
+    displayName: user.email
+  };
+}
+
+const openDialog = () => {
+  openModal()(EmailViewShareModal, {
+    onYes: () => { console.log('Yes clicked !' )},
+    users: selectedValue,
+  },{
+    closeButton: false
+  });
+};
 
 init();
 
@@ -81,7 +92,7 @@ init();
       <Select {loadOptions} {optionIdentifier} {getOptionLabel} {getSelectionLabel} {noOptionsMessage} bind:selectedValue isMulti="true" placeholder="Add users..."></Select>
       <br />
       <div class="has-text-right">
-        <button class="button is-link" disabled={!selectedValue || !selectedValue.length}>Add</button>
+        <button class="button" disabled={!selectedValue || !selectedValue.length} on:click|preventDefault="{openDialog}">Add</button>
       </div>
   </div>
 </div>

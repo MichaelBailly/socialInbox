@@ -7,15 +7,14 @@
 </script>
 
 <script>
-	import { get } from 'api.js';
 	import { emails, fetchEmails, isLoading } from '../libs/emails/emailProvider';
 	import EmailListItem from './_components/EmailListItem.svelte';
 	import EmailView from './_components/EmailView.svelte';
+	import Modal from '../components/Modal.svelte';
 
 	async function getEmails() {
 		fetchEmails();
 		console.log(emails);
-		console.log('/api/emails', emails);
 	}
 
 	getEmails();
@@ -52,6 +51,7 @@
 	</div>
 </div>
 
+<Modal />
 
 <style lang='less'>
 .emails-menu {
