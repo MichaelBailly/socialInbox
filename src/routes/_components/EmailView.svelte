@@ -56,6 +56,6 @@ $: recipients = to.concat(cc);
 
 <style>
   .email-display {
-    width: 50%;
+    flex: 0 0 50%;
   }
 </style>

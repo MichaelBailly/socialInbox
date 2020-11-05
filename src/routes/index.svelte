@@ -15,6 +15,7 @@
 	import { emails, myEmails, sharedEmails, fetchEmails, isLoading } from '../libs/emails/emailProvider';
 	import EmailListItem from './_components/EmailListItem.svelte';
 	import EmailView from './_components/EmailView.svelte';
+	import WorkSpace from './_components/WorkSpace.svelte';
 	import Modal from '../components/Modal.svelte';
 
 	let displayEmailId = null;
@@ -96,7 +97,8 @@
 	</div>
 	<div class="column content-column">
 		{#if emailDisplayed}
-			<EmailView email="{emailDisplayed}"></EmailView>
+			<EmailView email="{emailDisplayed}" />
+			<WorkSpace email="{emailDisplayed}" />
 		{/if}
 	</div>
 </div>
@@ -129,5 +131,7 @@
 }
 .content-column {
 	overflow: auto;
+	display: flex;
+	flex-direction: row;
 }
 </style>

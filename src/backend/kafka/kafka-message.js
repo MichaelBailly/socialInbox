@@ -4,10 +4,6 @@ export default class KafkaMessage {
     this.object = object;
   }
 
-  topic() {
-    return this.object.topic;
-  }
-
   serialize() {
     return {
       key: this.key,

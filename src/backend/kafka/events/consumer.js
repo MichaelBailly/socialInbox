@@ -4,6 +4,7 @@ import logger from '../../core/logger';
 import { jwtTokenReceiver } from '../../core/events/jwt';
 import { emailInitialSyncReceiver } from '../../core/events/email-initial-sync';
 import { emailShareReceiver } from '../../core/events/email/share';
+import { chatMessagePostReceived } from '../../core/events/chat-message/post';
 import KafkaMessage from '../kafka-message';
 
 const debug = logger.extend('kafka-consumer');
@@ -51,5 +52,7 @@ const onMessage = async ({ topic, partition, message }) => {
     emailInitialSyncReceiver(kafkaMessage);
   } else if (kafkaMessage.event() === 'email:share') {
     emailShareReceiver(kafkaMessage);
+  } else if (kafkaMessage.event() === 'chat:message:post') {
+    chatMessagePostReceived(kafkaMessage);
   }
 };

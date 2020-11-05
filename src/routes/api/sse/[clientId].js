@@ -49,6 +49,8 @@ export async function get(req, res) {
     debug('received Kafka message: %o', kafkaMessage);
     if (kafkaMessage.event() === 'email:shared') {
       emailSharedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'chat:message:posted') {
+      chatMessagePostedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -72,6 +74,24 @@ data: ${JSON.stringify(payload)}
 }
 
 const emailSharedEvent = async (kafkaMessage, { userId, debug, send }) => {
+  const payload = kafkaMessage.payload();
+  const database = await db();
+  const collection = database.collection('emails');
+  const email = await collection.findOne({ _id: payload.emailId });
+  if (!email) {
+    debug(`Email ${payload.emailId} not found`);
+    return;
+  }
+
+  if (email.users.concat(email.usersShared).includes(userId)) {
+    send(kafkaMessage.event(), payload);
+  }
+};
+
+const chatMessagePostedEvent = async (
+  kafkaMessage,
+  { userId, debug, send }
+) => {
   const payload = kafkaMessage.payload();
   const database = await db();
   const collection = database.collection('emails');
