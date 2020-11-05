@@ -1,5 +1,6 @@
 import logger from '../../../backend/core/logger';
 import createConsumer from '../../../backend/kafka/notifications/consumer';
+import db from '../../../backend/mongodb';
 
 const debugG = logger.extend('sse');
 let sseSessionCounter = 0;
@@ -35,16 +36,27 @@ export async function get(req, res) {
     send('ping', { date: Date.now() });
   }, 3000);
 
+  const eventCallbackArgs = {
+    userId,
+    res,
+    debug,
+    send,
+  };
+
   // connect consumer
 
-  const consumer = createConsumer(clientId, (kafkaMessage) => {
+  const consumer = await createConsumer(clientId, ({ kafkaMessage }) => {
     debug('received Kafka message: %o', kafkaMessage);
+    if (kafkaMessage.event() === 'email:shared') {
+      emailSharedEvent(kafkaMessage, eventCallbackArgs);
+    }
   });
 
   // Handle client disconnet
 
   req.on('close', () => {
     debug('Connection closed');
+    console.log(consumer);
     consumer.disconnect();
     clearInterval(pingInterval);
   });
@@ -58,3 +70,18 @@ data: ${JSON.stringify(payload)}
 `);
   };
 }
+
+const emailSharedEvent = async (kafkaMessage, { userId, debug, send }) => {
+  const payload = kafkaMessage.payload();
+  const database = await db();
+  const collection = database.collection('emails');
+  const email = await collection.findOne({ _id: payload.emailId });
+  if (!email) {
+    debug(`Email ${payload.emailId} not found`);
+    return;
+  }
+
+  if (email.users.concat(email.usersShared).includes(userId)) {
+    send(kafkaMessage.event(), payload);
+  }
+};

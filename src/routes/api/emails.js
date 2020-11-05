@@ -25,7 +25,14 @@ export async function get(req, res) {
   try {
     const database = await db();
     const collection = database.collection('emails');
-    const emails = await collection.find({ users: id }).sort({ lastModified: -1 }).skip(offset).limit(limit).toArray();
+    const emails = await collection
+      .find({
+        $or: [{ users: id }, { usersShared: id }],
+      })
+      .sort({ lastModified: -1 })
+      .skip(offset)
+      .limit(limit)
+      .toArray();
 
     debug('email fetch response OK, returning %i emails', emails.length);
     return res.status(200).json({ emails });

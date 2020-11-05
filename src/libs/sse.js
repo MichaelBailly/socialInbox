@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 let id;
 let es;
 
+const events = {};
+
 export function connect() {
   id = id || uuidv4();
   if (es) {
@@ -10,10 +12,10 @@ export function connect() {
   }
   es = new EventSource(`/api/sse/${id}`);
 
-  es.addEventListener('ping', (event) => {
-    const payload = JSON.parse(event.data);
-    console.log('SSE: received ping event', payload);
-  });
+  es.addEventListener(
+    'ping',
+    createCallbackWrapper('ping', () => {})
+  );
 
   es.onerror = (err) => {
     console.error('EventSource failed:', err);
@@ -24,4 +26,33 @@ export function connect() {
     }
     es = null;
   };
+
+  Object.keys(events).forEach((name) => {
+    events[name].forEach((callback) => {
+      es.addEventListener(name, callback);
+    });
+  });
 }
+
+export function registerEvent(name, callback) {
+  if (!events[name]) {
+    events[name] = [];
+  }
+  const callbackWrapper = createCallbackWrapper(name, callback);
+
+  events[name].push(callbackWrapper);
+  es && es.addEventListener(name, callbackWrapper);
+
+  return () => {
+    events[name] = events[name].filter((e) => e !== callbackWrapper);
+    es && es.removeEventListener(name, callbackWrapper);
+  };
+}
+
+const createCallbackWrapper = (name, callback) => {
+  return (event) => {
+    const payload = JSON.parse(event.data);
+    console.log(`SSE: received ${name} event`, payload);
+    callback(payload);
+  };
+};

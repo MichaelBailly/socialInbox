@@ -24,8 +24,8 @@ export function addShare(user, email, sharer, sharee) {
     user: { id: user._id, email: user.email },
     payload: {
       emailId: email._id,
-      sharerProj,
-      shareeProj,
+      sharer: sharerProj,
+      sharee: shareeProj,
     },
   };
   debug('Publishing to Kafka %O', message);

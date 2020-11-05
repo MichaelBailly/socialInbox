@@ -8,6 +8,7 @@
 
 <script>
 	import { goto, stores } from '@sapper/app';
+	import { user } from '../../libs/users';
 	import ListErrors from '../_components/ListErrors.svelte';
 	import { post } from 'utils.js';
 
@@ -21,7 +22,7 @@
 	let password = '';
 	let errors = null;
 
-	async function submit(event) {
+	async function submit() {
 		const response = await post('/api/login', { username, password });
 
 		// TODO handle network errors
@@ -29,6 +30,7 @@
 
 		if (response.user) {
 			$session.user = response.user;
+			$user = response.user;
 			goto('/');
 		}
 	}

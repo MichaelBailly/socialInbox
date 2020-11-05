@@ -1,5 +1,7 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
+import { user } from '../users';
 import { get, testFetch } from 'api';
+import { registerEvent } from '../sse';
 
 export const endpoint = '/api/emails';
 
@@ -10,6 +12,31 @@ export const isAddingUser = writable(false);
 export const errorAddingUser = writable(false);
 
 export const emails = writable([]);
+
+export const myEmails = derived([user, emails], ([$user, $emails]) => {
+  if (!$user._id) {
+    console.log('empty user', $user._id);
+    return [];
+  }
+  return $emails.filter((m) => m.users.includes($user._id));
+});
+
+export const sharedEmails = derived([user, emails], ([$user, $emails]) => {
+  if (!$user._id) {
+    return [];
+  }
+  return $emails.filter((m) => m.usersShared.includes($user._id));
+});
+
+/*
+export const myEmails = derived([user, emails], ([$user, $emails]) =>
+  $user._id ? $emails.filter((m) => m.users.includes($user._id)) : []
+);
+
+export const sharedEmails = derived([user, emails], ([$user, $emails]) =>
+  $user._id ? $emails.filter((m) => m.usersShared.includes($user._id)) : []
+);
+*/
 
 export const requestEmails = () => isLoading.set(true);
 export const receiveEmailSuccess = (data) => {
@@ -24,7 +51,7 @@ export const receiveEmailsError = (error) => {
   isLoading.set(false);
 };
 
-export const fetchEmails = async() => {
+export const fetchEmails = async () => {
   if (!testFetch()) {
     return;
   }
@@ -38,3 +65,35 @@ export const fetchEmails = async() => {
     receiveEmailsError(e);
   }
 };
+
+registerEvent('email:shared', async (payload) => {
+  let email;
+  try {
+    const data = await get(`/api/emails/${payload.emailId}`);
+    email = data.email;
+  } catch (e) {
+    console.log('Error: unable to fetch email', payload.emailId, payload);
+    return;
+  }
+
+  emails.update((list) => {
+    const newList = [...list];
+    const index = list.findIndex((e) => e._id === payload.emailId);
+    if (index < 0) {
+      // new email
+
+      //  find the most recent older mail
+      const nts = new Date(email.lastModified).getTime();
+      const tindex = newList.findIndex((email) => {
+        return new Date(email.lastModified).getTime() < nts;
+      });
+
+      // insert the new email at that position
+      newList.splice(tindex, 0, email);
+    } else {
+      newList[index] = email;
+    }
+
+    return newList;
+  });
+});

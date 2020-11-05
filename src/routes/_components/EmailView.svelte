@@ -1,7 +1,7 @@
 <script>
 import EmailRecipientDisplay from "./EmailRecipientDisplay.svelte";
 import EmailListItemDate from "./EmailListItemDate.svelte";
-import EmailViewBody from "./EmailViewBody.svelte";
+import EmailViewBody from "./EmailView/EmailViewBody.svelte";
 import EmailViewShare from "./EmailView/EmailViewShare.svelte";
 
 export let email;

@@ -1,7 +1,10 @@
 <script context="module">
+	import { user as localUser } from '../libs/users';
 	export function preload({ params }, { user }) {
 		if (!user) {
 			this.redirect(302, `/login`);
+		} else {
+			localUser.set(user);
 		}
 	}
 </script>
@@ -9,25 +12,50 @@
 <script>
 	import { onMount } from 'svelte';
 	import { connect } from '../libs/sse';
-	import { emails, fetchEmails, isLoading } from '../libs/emails/emailProvider';
+	import { emails, myEmails, sharedEmails, fetchEmails, isLoading } from '../libs/emails/emailProvider';
 	import EmailListItem from './_components/EmailListItem.svelte';
 	import EmailView from './_components/EmailView.svelte';
 	import Modal from '../components/Modal.svelte';
 
+	let displayEmailId = null;
+	$: emailDisplayed = displayEmailId === null ? null : $emails.find(e => e._id === displayEmailId);
 	let emailDisplayed = null;
+	let emailsList = emails;
 
-	async function getEmails() {
+	const getEmails = async () => {
 		fetchEmails();
 		console.log(emails);
 	}
 
 	const display = (event) => {
-		emailDisplayed = event.detail;
+		displayEmailId = event?.detail?._id || null;
 	}
 
-	onMount(() => {
-		connect();
-	});
+	const displayAll = () => {
+		if (emailsList === emails) {
+			return;
+		}
+		emailsList = emails;
+		display({});
+	}
+
+	const displayShared = () => {
+		if (emailsList === sharedEmails) {
+			return;
+		}
+		emailsList = sharedEmails;
+		display({});
+	}
+
+	const displayMy = () => {
+		if (emailsList === myEmails) {
+			return;
+		}
+		emailsList = myEmails;
+		display({});
+	}
+
+	onMount(connect);
 
 	getEmails();
 
@@ -46,12 +74,24 @@
 </div>
 
 <div class="columns p-0 m-0">
+
 	<div class="column menu-column">
-		Menu
+		<aside class="menu">
+			<p class="menu-label">
+				Emails
+			</p>
+			<ul class="menu-list">
+				<li><a on:click|preventDefault="{displayAll}" href="void(0)" class:is-active='{emailsList === emails}'>All emails</a></li>
+				<li><a on:click|preventDefault="{displayMy}" href="void(0)" class:is-active='{emailsList === myEmails}'>My emails</a></li>
+				<li><a on:click|preventDefault="{displayShared}" href="void(0)" class:is-active='{emailsList === sharedEmails}'>Shared with me</a></li>
+			</ul>
+		</aside>
 	</div>
 	<div class="column list-column">
-			{#each $emails as email (email._id)}
+			{#each $emailsList as email (email._id)}
 			<EmailListItem email="{email}" on:display='{display}'></EmailListItem>
+			{:else}
+			Nothing to display
 			{/each}
 	</div>
 	<div class="column content-column">
@@ -74,8 +114,8 @@
 }
 
 .menu-column {
-	width: 140px;
-	max-width: 140px;
+	width: 240px;
+	max-width: 240px;
 }
 
 .list-column {

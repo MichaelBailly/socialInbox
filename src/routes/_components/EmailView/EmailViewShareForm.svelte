@@ -1,4 +1,5 @@
 <script>
+import { onMount } from 'svelte';
 import { get, post } from 'api';
 import Select from 'svelte-select';
 import EmailViewShareModal from "./EmailViewShareModal.svelte";
@@ -6,12 +7,18 @@ import { openModal } from '../../../libs/modal/modalService';
 
 export let email;
 
-let acccessListIds = email.users.concat(email.usersShared);
-let accessList = [];
+$: acccessListIds = email.users.concat(email.usersShared);
+
+$: accessList = acccessListIds.map(id => userCache[id] || {});
 let loading = false;
 let selectedValue = null;
 let shareRequestActive = false;
 const noOptionsMessage = 'No user';
+const userCache = {};
+const updateUserCache = (users = []) => {
+  users.forEach(user => userCache[user._id] = user);
+  return users;
+}
 
 // ------------------ SELECT SPECIFIC VARIABLES
 const optionIdentifier = '_id';
@@ -24,18 +31,18 @@ const loadOptions = async (q) => {
     return Promise.resolve([]);
   }
   const users = await get('/api/users', null, { qs: { q } });
-  return users.map(displayUser);
+  return updateUserCache(users.map(displayUser));
 };
 
 // ---------------------------------------------
 
-const init = async () => {
+onMount(async () => {
   const loadTimeout = setTimeout(() => { loading = true }, 600);
   const accessListResponse = await get('/api/users', null, { qs: { ids: acccessListIds.join(',') } });
   clearTimeout(loadTimeout);
   loading = false;
-  accessList = accessListResponse.map(displayUser);
-};
+  updateUserCache(accessListResponse.map(displayUser));
+});
 
 const displayUser = user => {
   if (user.displayName) {
@@ -69,6 +76,7 @@ const share = async () => {
     console.log(e);
   }
   shareRequestActive = false;
+  selectedValue = [];
 };
 
 const openDialog = () => {
@@ -79,10 +87,6 @@ const openDialog = () => {
     closeButton: false
   });
 };
-
-init();
-
-
 </script>
 
 <div class="dropdown-content">

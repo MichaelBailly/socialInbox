@@ -41,6 +41,7 @@ export async function emailShareReceiver(kafkaMessage) {
           usersShared: shareeProj.id(),
           activity,
         },
+        $set: { lastModified: new Date() },
       }
     );
 
