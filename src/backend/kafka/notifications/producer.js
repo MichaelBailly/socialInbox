@@ -24,7 +24,7 @@ export default async function sendNotification(kafkaMessage) {
   return connectPromise.then(() => {
     return producer
       .send({
-        topic: CONSTANTS.KAFKA.TOPICS.NOTIFICATIONS,
+        topic: CONSTANTS.KAFKA.TOPICS.NOTIFICATIONS.NAME,
         messages,
       })
       .then((response) => {

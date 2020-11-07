@@ -5,7 +5,10 @@ export default {
         NAME: 'sobox',
         CONSUMER_GROUP: 'sobox-events',
       },
-      NOTIFICATIONS: 'sobox-notifs',
+      NOTIFICATIONS: {
+        NAME: 'sobox-notifs',
+        CONSUMER_GROUP: 'sobox-server',
+      },
     },
     BROKERS: ['localhost:9093'],
     CLIENT_ID: 'sobox',

@@ -9,13 +9,13 @@ const debug = logger.extend('commands:email');
 /*
  * user: {_id, email} connected user
  * email: Obj, email to share
- * sharer: userProj the user sharing the email
- * sharee: userProj: the user for who the mail is shared
+ * actor: userProj the user sharing the email
+ * target: userProj: the user for who the mail is shared
  */
-export function addShare(user, email, sharer, sharee) {
-  const sharerProj = UserProj.fromObject(sharer);
-  const shareeProj = UserProj.fromObject(sharee);
-  const activity = new EmailShareActivity(sharerProj, shareeProj);
+export function addShare(user, email, actor, target) {
+  const actorProj = UserProj.fromObject(actor);
+  const targetProj = UserProj.fromObject(target);
+  const activity = new EmailShareActivity(actorProj, targetProj);
 
   console.log('Going to push to Kafka:', activity, JSON.stringify(activity));
 
@@ -24,13 +24,13 @@ export function addShare(user, email, sharer, sharee) {
     user: { id: user._id, email: user.email },
     payload: {
       emailId: email._id,
-      sharer: sharerProj,
-      sharee: shareeProj,
+      actor: actorProj,
+      target: targetProj,
     },
   };
   debug('Publishing to Kafka %O', message);
 
-  const kafkaMessage = KafkaMessage.fromObject(sharee._id, message);
+  const kafkaMessage = KafkaMessage.fromObject(target._id, message);
 
   sendEvent(kafkaMessage);
 }

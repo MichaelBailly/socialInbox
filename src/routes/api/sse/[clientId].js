@@ -51,6 +51,8 @@ export async function get(req, res) {
       emailSharedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'chat:message:posted') {
       chatMessagePostedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'chat:started') {
+      chatStartedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -92,6 +94,21 @@ const chatMessagePostedEvent = async (
   kafkaMessage,
   { userId, debug, send }
 ) => {
+  const payload = kafkaMessage.payload();
+  const database = await db();
+  const collection = database.collection('emails');
+  const email = await collection.findOne({ _id: payload.emailId });
+  if (!email) {
+    debug(`Email ${payload.emailId} not found`);
+    return;
+  }
+
+  if (email.users.concat(email.usersShared).includes(userId)) {
+    send(kafkaMessage.event(), payload);
+  }
+};
+
+const chatStartedEvent = async (kafkaMessage, { userId, debug, send }) => {
   const payload = kafkaMessage.payload();
   const database = await db();
   const collection = database.collection('emails');

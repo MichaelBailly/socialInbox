@@ -2,13 +2,14 @@ export default class UserProj {
   constructor(
     id,
     email,
-    { displayName = null, firstname = null, lastname = null }
+    { displayName = null, firstname = null, lastname = null, automation = null }
   ) {
     this._id = id;
     this.email = email;
     this.displayName = displayName;
     this.firstname = firstname;
     this.lastname = lastname;
+    this.automation = automation;
     if (!this._id || !this.email) {
       throw new Error('user project: id & email are mandatory');
     }
@@ -23,6 +24,7 @@ export default class UserProj {
       displayName: userProj.displayName,
       firstname: userProj.firstname,
       lastname: userProj.lastname,
+      automation: userProj.automation,
     });
   }
 }

@@ -1,8 +1,9 @@
+export const identifier = 'email:share';
 export default class EmailShareActivity {
-  constructor(sharer, sharee, date = null) {
-    this.name = 'email:share';
-    this.sharer = sharer;
-    this.sharee = sharee;
+  constructor(actor, target, date = null) {
+    this.name = identifier;
+    this.actor = actor;
+    this.target = target;
     this.date = date || new Date();
   }
 }

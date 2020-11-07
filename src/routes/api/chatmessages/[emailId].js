@@ -2,19 +2,30 @@ import db from '../../../backend/mongodb';
 import ChatMessage from '../../../shared/chat-message';
 import UserProj from '../../../shared/user-proj';
 import { addChatMessage } from '../../../backend/core/commands/chat-message';
+import logger from '../../../backend/core/logger';
+
+const debug = logger.extend('api:chatmessages:[emailId]');
 
 export async function post(req, res) {
   const currentUser = req.session.user;
   const emailId = req.params.emailId;
+  debug('POST: checing permissions');
   if (!checkPermission(currentUser, emailId, res)) {
     return;
   }
+  debug('POST: checking body');
   if (!req.body) {
     return res.status(400).json({ error: 'request body should be an object' });
   }
 
+  const body = {
+    date: req.body.date,
+    body: req.body.body,
+    uuid: req.body.uuid,
+  };
+
   const message = {
-    ...req.body,
+    ...body,
     user: UserProj.fromObject(currentUser),
     emailId,
   };
@@ -22,6 +33,7 @@ export async function post(req, res) {
   let chatMessage;
   try {
     chatMessage = new ChatMessage(message);
+    debug('POST: calling addChatMessage command');
     addChatMessage(chatMessage);
   } catch (e) {
     return res.status(400).json({ error: e.message, stack: e.stack });
@@ -43,7 +55,7 @@ export async function get(req, res) {
 
   try {
     const messages = await collection
-      .find()
+      .find({ emailId })
       .sort({ _id: -1 })
       .limit(50)
       .toArray();

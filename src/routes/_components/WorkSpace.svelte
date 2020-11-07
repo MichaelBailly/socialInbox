@@ -53,13 +53,7 @@ const switchActivity = () => switchModule('activity');
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-//    position: relative;
-//    display: flex;
-//    flex-direction: column;
   }
   .tabs {
-    //position: relative;
-    //top:0;
-    //width: 100%;
   }
 </style>

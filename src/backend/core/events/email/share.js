@@ -11,9 +11,9 @@ const NOTIFICATION_NAME = 'email:shared';
 export async function emailShareReceiver(kafkaMessage) {
   const payload = kafkaMessage.payload();
 
-  const sharerProj = UserProj.fromObject(payload.sharer);
-  const shareeProj = UserProj.fromObject(payload.sharee);
-  const activity = new EmailShareActivity(sharerProj, shareeProj);
+  const actorProj = UserProj.fromObject(payload.actor);
+  const targetProj = UserProj.fromObject(payload.target);
+  const activity = new EmailShareActivity(actorProj, targetProj);
 
   const database = await db();
   const collection = database.collection('emails');
@@ -26,10 +26,10 @@ export async function emailShareReceiver(kafkaMessage) {
   }
 
   if (
-    email.usersShared.includes(shareeProj.id()) ||
-    email.users.includes(shareeProj.id())
+    email.usersShared.includes(targetProj.id()) ||
+    email.users.includes(targetProj.id())
   ) {
-    debug(`User ${shareeProj.id()} already in email ${email._id}`);
+    debug(`User ${targetProj.id()} already in email ${email._id}`);
     return false;
   }
 
@@ -38,7 +38,7 @@ export async function emailShareReceiver(kafkaMessage) {
       { _id: email._id },
       {
         $push: {
-          usersShared: shareeProj.id(),
+          usersShared: targetProj.id(),
           activity,
         },
         $set: { lastModified: new Date() },

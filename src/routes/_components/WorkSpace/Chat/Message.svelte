@@ -17,13 +17,12 @@
   */
 export let message;
 export let messageIndex;
-export let messages;
+export let previousMessage;
 
 import { isToday, format } from "date-fns";
 import { onMount } from 'svelte';
-import { getUserAvatar, getDisplayName, user } from '../../../../libs/users';
+import { getUserAvatar, getDisplayName } from '../../../../libs/users';
 
-$: previousMessage = messageIndex === 0 ? null: messages[(messageIndex - 1)];
 $: sameUser = previousMessage && message.user._id === previousMessage.user._id;
 
 let avatarUrl;
@@ -46,9 +45,9 @@ onMount(() => {
 </script>
 
 {#if sameUser}
-<div class="pl-6">{message.body}</div>
+<div class="pl-6" class:pending="{message.pending}">{message.body}</div>
 {:else}
-<article class="media">
+<article class="media" class:pending="{message.pending}">
   <figure class="media-left">
     <p class="image is-32x32">
       <img src="{avatarUrl}" alt="${displayName} avatar">
@@ -67,3 +66,9 @@ onMount(() => {
   </div>
 </article>
 {/if}
+
+<style lang="less">
+.pending {
+  background-color: #ddd;
+}
+</style>

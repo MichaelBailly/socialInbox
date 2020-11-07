@@ -12,11 +12,6 @@ export function connect() {
   }
   es = new EventSource(`/api/sse/${id}`);
 
-  es.addEventListener(
-    'ping',
-    createCallbackWrapper('ping', () => {})
-  );
-
   es.onerror = (err) => {
     console.error('EventSource failed:', err);
     try {
@@ -25,6 +20,7 @@ export function connect() {
       console.log('unable to close EventSource', e);
     }
     es = null;
+    setTimeout(connect, 10000);
   };
 
   Object.keys(events).forEach((name) => {

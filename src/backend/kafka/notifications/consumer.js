@@ -23,7 +23,9 @@ async function run(groupId, onMessage) {
 
   try {
     debug('subscribing');
-    await consumer.subscribe({ topic: CONSTANTS.KAFKA.TOPICS.NOTIFICATIONS });
+    await consumer.subscribe({
+      topic: CONSTANTS.KAFKA.TOPICS.NOTIFICATIONS.NAME,
+    });
   } catch (e) {
     debug('subscription failed: %O', e);
     process.exit(1);
