@@ -39,7 +39,7 @@ export async function chatMessagePostReceived(kafkaMessage) {
   const notificationMessage = KafkaMessage.fromObject(kafkaMessage.key, {
     event: NOTIFICATION_NAME,
     payload: chatMessage,
-    user: { id: chatMessage.user._id, email: chatMessage.user.email },
+    user: { _id: chatMessage.user._id, email: chatMessage.user.email },
   });
   debug('Sending kafka notification: %O', notificationMessage);
   sendNotification(notificationMessage);

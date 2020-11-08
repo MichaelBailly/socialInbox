@@ -37,12 +37,10 @@ export async function labelCreateReceived(kafkaMessage) {
     user: kafkaMessage.user(),
   });
   debug('Sending kafka notification: %O', notificationMessage);
-  sendNotification(notificationMessage);
-  debug('Notification sent');
-
   const activity = new LabelCreateActivity(
     UserProj.fromObject(kafkaMessage.user()),
     label
   );
-  recordActivity(activity, null, true);
+  await recordActivity(activity, null, true);
+  debug('Notification sent');
 }

@@ -7,7 +7,7 @@ const debug = logger.extend('commands:chat-message');
 export function addChatMessage(chatMessage) {
   const message = {
     event: 'chat:message:post',
-    user: { id: chatMessage.user._id, email: chatMessage.user.email },
+    user: chatMessage.user,
     payload: chatMessage,
   };
   debug('Publishing to Kafka %O', message);

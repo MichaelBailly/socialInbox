@@ -21,7 +21,7 @@ export function addShare(user, email, actor, target) {
 
   const message = {
     event: activity.name,
-    user: { id: user._id, email: user.email },
+    user,
     payload: {
       emailId: email._id,
       actor: actorProj,

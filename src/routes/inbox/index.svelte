@@ -14,7 +14,6 @@
 	import { connect } from '../../libs/sse';
 	import { emails, myEmails, sharedEmails, fetchEmails, isLoading } from '../../libs/emails/emailProvider';
 	import EmailListItem from '../_components/EmailListItem.svelte';
-	import EmailView from '../_components/EmailView.svelte';
 	import WorkSpace from './_components/WorkSpace.svelte';
 	import Modal from '../../components/Modal.svelte';
 

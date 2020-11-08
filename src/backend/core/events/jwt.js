@@ -16,7 +16,7 @@ export default function jwtEvent(user, jwt) {
       token: jwt,
     },
   };
-  const kafkaMessage = KafkaMessage.fromObject(user.id, message);
+  const kafkaMessage = KafkaMessage.fromObject(user._id, message);
 
   sendEvent(kafkaMessage);
 }
@@ -29,10 +29,10 @@ export async function jwtTokenReceiver(kafkaMessage) {
     const database = await db();
     const collection = database.collection('userinfos');
     const response = await collection.updateOne(
-      { _id: user.id },
+      { _id: user._id },
       {
         $set: {
-          _id: user.id,
+          _id: user._id,
           email: user.email,
           token: kafkaMessage.payload().token,
         },
@@ -41,15 +41,25 @@ export async function jwtTokenReceiver(kafkaMessage) {
         upsert: true,
       }
     );
-    if (response.upsertedCount !== 1 && response.modifiedCount !== 1 && response.matchedCount !== 1) {
+    if (
+      response.upsertedCount !== 1 &&
+      response.modifiedCount !== 1 &&
+      response.matchedCount !== 1
+    ) {
       debug('jwtTokenReceiver token storage failed: %O', response);
-      throw new Error('jwtTokenReceiver token storage failed: mongo upsertedCount is !== 1');
+      throw new Error(
+        'jwtTokenReceiver token storage failed: mongo upsertedCount is !== 1'
+      );
     } else {
-      notificationMessage = kafkaMessage.setEvent(`${kafkaMessage.event()}:store:success`);
+      notificationMessage = kafkaMessage.setEvent(
+        `${kafkaMessage.event()}:store:success`
+      );
     }
   } catch (e) {
     debug('jwtTokenReceiver token storage failed: %O', e);
-    notificationMessage = kafkaMessage.setEvent(`${kafkaMessage.event()}:store:failed`);
+    notificationMessage = kafkaMessage.setEvent(
+      `${kafkaMessage.event()}:store:failed`
+    );
   }
 
   sendNotification(notificationMessage);

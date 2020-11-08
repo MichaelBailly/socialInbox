@@ -9,12 +9,12 @@ export function createLabel(label, user) {
   const userProj = UserProj.fromObject(user);
   const message = {
     event: 'label:create',
-    user: { ...userProj, id: userProj._id },
+    user: userProj,
     payload: label,
   };
   debug('Publishing to Kafka %O', message);
 
-  const kafkaMessage = KafkaMessage.fromObject(message.user.id, message);
+  const kafkaMessage = KafkaMessage.fromObject(userProj._id, message);
 
   sendEvent(kafkaMessage);
 }

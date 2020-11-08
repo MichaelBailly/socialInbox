@@ -14,8 +14,14 @@ export default async function startConsumer() {
     }
 
     const user = kafkaMessage.user();
-    if (synchronizers.has(user.id)) {
-      debug(`Synchronizer for user ${user.id}(${user.email}) already exists, running=${synchronizers.get(user.id).running}, initialSync=${synchronizers.get(user.id).initialSync}`);
+    if (synchronizers.has(user._id)) {
+      debug(
+        `Synchronizer for user ${user._id}(${
+          user.email
+        }) already exists, running=${
+          synchronizers.get(user._id).running
+        }, initialSync=${synchronizers.get(user._id).initialSync}`
+      );
       return;
     }
 
@@ -26,6 +32,6 @@ export default async function startConsumer() {
       user,
     });
     jmapSynchronizer.start();
-    synchronizers.set(user.id, jmapSynchronizer);
+    synchronizers.set(user._id, jmapSynchronizer);
   });
 }

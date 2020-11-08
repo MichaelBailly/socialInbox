@@ -8,7 +8,8 @@ const events = {};
 export function connect() {
   id = id || uuidv4();
   if (es) {
-    throw new Error('Event Source object already exist');
+    console.log('Event Source object already exist, ignoring connect() call');
+    return;
   }
   es = new EventSource(`/api/sse/${id}`);
 

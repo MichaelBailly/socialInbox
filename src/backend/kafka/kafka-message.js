@@ -15,10 +15,6 @@ export default class KafkaMessage {
     return this.object.user;
   }
 
-  userId() {
-    return this.object.userId;
-  }
-
   event() {
     return this.object.event;
   }
@@ -46,8 +42,8 @@ export default class KafkaMessage {
       throw new Error('kafka message should have a message user');
     }
 
-    if (!object.user.id) {
-      throw new Error('kafka message user should have an id property');
+    if (!object.user._id) {
+      throw new Error('kafka message user should have an _id property');
     }
 
     if (!object.user.email) {

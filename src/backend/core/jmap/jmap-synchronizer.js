@@ -13,7 +13,9 @@ export default class JmapSynchronizer {
     this.jmapURL = jmapURL;
     this.token = token;
     this.user = user;
-    this.debug = logger.extend(`synchronizer[${this.user.id}/${this.user.email}]`);
+    this.debug = logger.extend(
+      `synchronizer[${this.user._id}/${this.user.email}]`
+    );
 
     // state
     this.running = false;
@@ -64,19 +66,27 @@ export default class JmapSynchronizer {
 
     while (!endLoop) {
       this.debug(`fetching emails, position=${position}, limit=${limit}`);
-      const emails = await fetchEmails(this.jmapURL, this.token, accountId, mailboxId, position, limit);
+      const emails = await fetchEmails(
+        this.jmapURL,
+        this.token,
+        accountId,
+        mailboxId,
+        position,
+        limit
+      );
 
-      const kafkaMessages = emails.filter((email) => {
-        const date = parseISO(email.receivedAt);
-        if (isBefore(date, oneMonthAgo)) {
-          this.debug('email is more that one month ago old, ignoring');
-          endLoop = true;
-          return false;
-        }
-        return true;
-      })
+      const kafkaMessages = emails
+        .filter((email) => {
+          const date = parseISO(email.receivedAt);
+          if (isBefore(date, oneMonthAgo)) {
+            this.debug('email is more that one month ago old, ignoring');
+            endLoop = true;
+            return false;
+          }
+          return true;
+        })
         .map((email) => {
-          return KafkaMessage.fromObject(this.user.id, {
+          return KafkaMessage.fromObject(this.user._id, {
             user: this.user,
             event: 'email:initial-sync',
             payload: email,
@@ -84,7 +94,10 @@ export default class JmapSynchronizer {
         });
 
       if (kafkaMessages.length) {
-        this.debug('sending %i mails to kafka (event=email:initial-sync)', kafkaMessages.length);
+        this.debug(
+          'sending %i mails to kafka (event=email:initial-sync)',
+          kafkaMessages.length
+        );
         sendEvent(kafkaMessages);
       } else {
         endLoop = true;

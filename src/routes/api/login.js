@@ -10,15 +10,15 @@ const { OPENPAAS_URL } = process.env;
 export async function post(req, res) {
   if (
     !req.body ||
-      !req.body.username ||
-      typeof req.body.username !== 'string'
+    !req.body.username ||
+    typeof req.body.username !== 'string'
   ) {
     return res.status(400).json({ error: 'username should be a string' });
   }
   if (
     !req.body ||
-      !req.body.password ||
-      typeof req.body.password !== 'string'
+    !req.body.password ||
+    typeof req.body.password !== 'string'
   ) {
     return res.status(400).json({ error: 'password should be a string' });
   }
@@ -48,11 +48,11 @@ export async function post(req, res) {
     }
     req.session.user = user;
     res.status(200).json({ user });
-    jwtEvent({ id: user._id, email: user.email }, jwt);
+    jwtEvent({ _id: user._id, email: user.email }, jwt);
   } catch (e) {
     res.status(401).json({ error: e.message || e, details: e.stack || e });
   }
-};
+}
 
 function findUserEmail(user) {
   const accounts = [...user.accounts];
