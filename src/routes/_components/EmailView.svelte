@@ -3,6 +3,7 @@ import EmailRecipientDisplay from "./EmailRecipientDisplay.svelte";
 import EmailListItemDate from "./EmailListItemDate.svelte";
 import EmailViewBody from "./EmailView/EmailViewBody.svelte";
 import EmailViewShare from "./EmailView/EmailViewShare.svelte";
+import EmailViewActionButton from './EmailView/EmailViewActionButton.svelte';
 
 export let email;
 
@@ -22,16 +23,19 @@ $: recipients = to.concat(cc);
   <div class="block headers">
     <div class="subject pl-2 pb-2">
       <h4 class="title is-4  is-spaced">{subject}</h4>
+      <div>
+        <EmailViewActionButton {email} />
+      </div>
     </div>
     <div class="level">
       <div class="level-left">
         <div class="level-item">
-          <h6 class="subtitle is-6"><EmailListItemDate email="{email}" fullDate="true" /></h6>
+          <h6 class="subtitle is-6"><EmailListItemDate {email} fullDate="true" /></h6>
         </div>
       </div>
       <div class="level-right">
         <div class="level-item">
-          <EmailViewShare email="{email}" />
+          <EmailViewShare {email} />
         </div>
       </div>
     </div>
@@ -54,8 +58,18 @@ $: recipients = to.concat(cc);
   </div>
 </div>
 
-<style>
+<style lang="less">
   .email-display {
     flex: 0 0 50%;
+  }
+
+  .subject {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    h2 {
+      flex-grow: 1;
+    }
   }
 </style>

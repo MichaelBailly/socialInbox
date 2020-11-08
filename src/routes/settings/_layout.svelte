@@ -27,11 +27,6 @@
 </div>
 
 <style lang='less'>
-.columns {
-	overflow-y: hidden;
-	height: calc(100% - 52px);
-}
-
 .menu-column {
 	width: 240px;
 	max-width: 240px;

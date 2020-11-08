@@ -3,10 +3,25 @@ import { onMount } from 'svelte';
 import Nav from '../components/Nav.svelte';
 import Modal from '../components/Modal.svelte';
 import { connect } from '../libs/sse';
+import { user } from '../libs/users';
+import { loadLabels } from '../libs/labels/labelProvider';
 
 export let segment;
 
-onMount(connect);
+onMount(() => {
+	let hadUser = false;
+	user.subscribe((user) => {
+		if (!user._id) {
+			hadUser = false;
+			return;
+		}
+		if (!hadUser) {
+			loadLabels();
+			connect();
+		}
+		hadUser = true;
+	});
+});
 </script>
 
 <style global lang="less">

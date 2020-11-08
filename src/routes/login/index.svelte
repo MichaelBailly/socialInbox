@@ -1,7 +1,7 @@
 <script context="module">
 	export async function preload({ params }, { user }) {
 		if (user) {
-			this.redirect(302, `/`);
+			this.redirect(302, `/inbox`);
 		}
 	}
 </script>

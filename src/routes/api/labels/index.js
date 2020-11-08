@@ -1,4 +1,13 @@
 import { createLabel } from '../../../backend/core/commands/label';
+import db from '../../../backend/mongodb';
+
+export async function get(req, res) {
+  const database = await db();
+  const collection = database.collection('labels');
+  const labels = await collection.find({}).sort({ name: 1 }).toArray();
+  res.status(200).json(labels);
+}
+
 export async function post(req, res) {
   const currentUser = req.session.user;
 

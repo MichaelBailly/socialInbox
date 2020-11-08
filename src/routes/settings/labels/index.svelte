@@ -2,6 +2,8 @@
 import { openModal, closeModal } from '../../../libs/modal/modalService';
 import LabelsAdd from '../../_components/Labels/Add.svelte';
 import { post } from 'api';
+import { labels } from '../../../libs/labels/labelProvider';
+import Label from '../../_components/Labels/Label.svelte';
 
 
 const createLabel = async (newLabel) => {
@@ -41,7 +43,15 @@ const openDialog = () => {
       </div>
     </div>
   </nav>
-  <span class="tag is-black"></span>
+  <div class="contents">
+    {#each $labels as label}
+    <div>
+      <p><Label {label} /></p>
+      <p>{label.description}</p>
+      <hr />
+    </div>
+    {/each}
+  </div>
 </div>
 
 <style lang="less">
