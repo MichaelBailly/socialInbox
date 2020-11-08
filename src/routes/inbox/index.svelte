@@ -15,7 +15,7 @@
 	import { emails, myEmails, sharedEmails, fetchEmails, isLoading } from '../../libs/emails/emailProvider';
 	import EmailListItem from '../_components/EmailListItem.svelte';
 	import EmailView from '../_components/EmailView.svelte';
-	import WorkSpace from './WorkSpace.svelte';
+	import WorkSpace from './_components/WorkSpace.svelte';
 	import Modal from '../../components/Modal.svelte';
 
 	let displayEmailId = null;
@@ -95,7 +95,7 @@
 			Nothing to display
 			{/each}
 	</div>
-	<div class="column content-column">
+	<div class="column content-column p-0">
 		{#if emailDisplayed}
 			<WorkSpace email="{emailDisplayed}" />
 		{/if}
