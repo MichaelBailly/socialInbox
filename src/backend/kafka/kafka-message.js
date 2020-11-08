@@ -19,10 +19,6 @@ export default class KafkaMessage {
     return this.object.userId;
   }
 
-  userEmail() {
-    return this.object.userEmail;
-  }
-
   event() {
     return this.object.event;
   }
@@ -66,7 +62,6 @@ export default class KafkaMessage {
       event: object.event,
       payload: object.payload,
       user: object.user,
-      userEmail: object.userEmail,
     });
   }
 

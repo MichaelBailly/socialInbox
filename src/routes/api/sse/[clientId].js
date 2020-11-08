@@ -53,6 +53,8 @@ export async function get(req, res) {
       chatMessagePostedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'chat:started') {
       chatStartedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'label:created') {
+      labelCreatedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -121,4 +123,8 @@ const chatStartedEvent = async (kafkaMessage, { userId, debug, send }) => {
   if (email.users.concat(email.usersShared).includes(userId)) {
     send(kafkaMessage.event(), payload);
   }
+};
+
+const labelCreatedEvent = async (kafkaMessage, { userId, send }) => {
+  send(kafkaMessage.event(), kafkaMessage.payload());
 };

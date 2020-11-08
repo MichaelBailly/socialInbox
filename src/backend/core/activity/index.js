@@ -7,7 +7,7 @@ const debug = logger.extend('activity');
 
 export async function recordActivity(
   activity,
-  emailId,
+  emailId = null,
   forwardToNotifications = false
 ) {
   debug('recordActivity starts for %O', activity);
@@ -28,6 +28,49 @@ export async function recordActivity(
     return false;
   }
 
+  if (!emailId) {
+    await recordGlobalActivity(activity);
+    if (forwardToNotifications) {
+      return sendGlobalActivity(activity);
+    }
+  } else {
+    await recordEmailActivity(emailId, activity);
+    if (forwardToNotifications) {
+      return sendEmailActivity(activity, emailId);
+    }
+  }
+
+  return true;
+}
+
+const recordGlobalActivity = async (activity) => {
+  try {
+    const database = await db();
+    const collection = database.collection('userinfos');
+    const response = await collection.updateOne(
+      { _id: activity.actor.id },
+      { $push: { activity } }
+    );
+
+    if (response.modifiedCount !== 1) {
+    }
+  } catch (e) {
+    debug('DataStore error on activity: %s %s', e.message, e.stack);
+    return false;
+  }
+};
+
+const sendGlobalActivity = (activity) => {
+  const payload = { ...activity };
+  const kafkaMessage = KafkaMessage.fromObject(activity.actor._id, {
+    event: payload.name,
+    user: { id: payload.actor._id, email: payload.actor.email },
+    payload,
+  });
+  sendNotification(kafkaMessage);
+};
+
+const recordEmailActivity = async (emailId, activity) => {
   try {
     const database = await db();
     const collection = database.collection('emails');
@@ -42,15 +85,9 @@ export async function recordActivity(
     debug('DataStore error on activity: %s %s', e.message, e.stack);
     return false;
   }
+};
 
-  if (forwardToNotifications) {
-    return sendActivity(activity, emailId);
-  }
-
-  return true;
-}
-
-const sendActivity = (activity, emailId) => {
+const sendEmailActivity = (activity, emailId) => {
   const payload = { ...activity, emailId };
   const kafkaMessage = KafkaMessage.fromObject(activity.actor._id, {
     event: payload.name,

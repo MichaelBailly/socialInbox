@@ -10,13 +10,10 @@
 </script>
 
 <script>
-	import { onMount } from 'svelte';
-	import { connect } from '../libs/sse';
 	import { emails, myEmails, sharedEmails, fetchEmails, isLoading } from '../libs/emails/emailProvider';
 	import EmailListItem from './_components/EmailListItem.svelte';
 	import EmailView from './_components/EmailView.svelte';
 	import WorkSpace from './_components/WorkSpace.svelte';
-	import Modal from '../components/Modal.svelte';
 
 	let displayEmailId = null;
 	$: emailDisplayed = displayEmailId === null ? null : $emails.find(e => e._id === displayEmailId);
@@ -56,13 +53,7 @@
 		display({});
 	}
 
-	onMount(connect);
-
 	getEmails();
-
-
-
-
 
 </script>
 
@@ -102,8 +93,6 @@
 		{/if}
 	</div>
 </div>
-
-<Modal />
 
 <style lang='less'>
 .emails-menu {

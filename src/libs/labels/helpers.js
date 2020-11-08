@@ -1,0 +1,18 @@
+export const COLORS = {
+  1: 'is-black',
+  2: 'is-dark',
+  3: 'is-light',
+  4: 'is-white',
+  5: 'is-primary',
+  6: 'is-link',
+  7: 'is-info',
+  8: 'is-success',
+  9: 'is-warning',
+  10: 'is-danger',
+  11: 'is-primary is-light',
+  12: 'is-link is-light',
+  13: 'is-info is-light',
+  14: 'is-success is-light',
+  15: 'is-warning is-light',
+  16: 'is-danger is-light',
+};

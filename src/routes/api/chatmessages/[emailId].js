@@ -9,7 +9,7 @@ const debug = logger.extend('api:chatmessages:[emailId]');
 export async function post(req, res) {
   const currentUser = req.session.user;
   const emailId = req.params.emailId;
-  debug('POST: checing permissions');
+  debug('POST: checking permissions');
   if (!checkPermission(currentUser, emailId, res)) {
     return;
   }

@@ -1,7 +1,12 @@
 <script>
-	import Nav from '../components/Nav.svelte';
+import { onMount } from 'svelte';
+import Nav from '../components/Nav.svelte';
+import Modal from '../components/Modal.svelte';
+import { connect } from '../libs/sse';
 
-	export let segment;
+export let segment;
+
+onMount(connect);
 </script>
 
 <style global lang="less">
@@ -29,3 +34,4 @@ main {
 <main>
 	<slot></slot>
 </main>
+<Modal />
