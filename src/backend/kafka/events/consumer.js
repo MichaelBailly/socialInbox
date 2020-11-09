@@ -6,6 +6,7 @@ import { emailInitialSyncReceiver } from '../../core/events/email-initial-sync';
 import { emailShareReceiver } from '../../core/events/email/share';
 import { chatMessagePostReceived } from '../../core/events/chat-message/post';
 import { labelCreateReceived } from '../../core/events/label/create';
+import { emailLabelsUpdateReceiver } from '../../core/events/email/labels-update';
 import KafkaMessage from '../kafka-message';
 
 const debug = logger.extend('kafka-consumer');
@@ -57,5 +58,7 @@ const onMessage = async ({ topic, partition, message }) => {
     chatMessagePostReceived(kafkaMessage);
   } else if (kafkaMessage.event() === 'label:create') {
     labelCreateReceived(kafkaMessage);
+  } else if (kafkaMessage.event() === 'email:labels:update') {
+    emailLabelsUpdateReceiver(kafkaMessage);
   }
 };

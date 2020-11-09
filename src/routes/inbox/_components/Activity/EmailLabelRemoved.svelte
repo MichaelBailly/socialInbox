@@ -3,7 +3,7 @@ export let activity;
 
 import { user as userStore, getDisplayName } from '../../../../libs/users';
 import ActivityTemplate from './ActivityTemplate.svelte';
-
+import Label from '../../../_components/Labels/Label.svelte';
 
 let user = {};
 
@@ -11,12 +11,15 @@ userStore.subscribe((value) => user = value);
 
 $: actor = activity.actor._id === user._id;
 $: actorDisplayName = getDisplayName(activity.actor);
+
 </script>
 
 <ActivityTemplate date="{activity.date}">
-{#if actor}You{:else}{actorDisplayName}{/if} started a conversation
-<span slot="icon" class="icon is-medium has-text-primary">
-  <i class="fas fa-lg fa-comments"></i>
+<span>
+  {#if actor}You{:else}{actorDisplayName}{/if}
+  removed the label <Label label={activity.label} /></span>
+
+<span slot="icon" class="icon is-medium has-text-success">
+  <i class="fas fa-lg fa-tags"></i>
 </span>
 </ActivityTemplate>
-

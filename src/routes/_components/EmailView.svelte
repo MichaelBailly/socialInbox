@@ -4,6 +4,7 @@ import EmailListItemDate from "./EmailListItemDate.svelte";
 import EmailViewBody from "./EmailView/EmailViewBody.svelte";
 import EmailViewShare from "./EmailView/EmailViewShare.svelte";
 import EmailViewActionButton from './EmailView/EmailViewActionButton.svelte';
+import Label from './Labels/Label.svelte';
 
 export let email;
 
@@ -22,7 +23,14 @@ $: recipients = to.concat(cc);
 <div class="box email-display">
   <div class="block headers">
     <div class="subject pl-2 pb-2">
-      <h4 class="title is-4  is-spaced">{subject}</h4>
+      <div>
+        <h4 class="title is-4  is-spaced">{subject}
+          {#each email.labels as label (label._id)}
+          <span class="pr-2 has-text-weight-normal"><Label {label} /></span>
+        {/each}
+        </h4>
+
+      </div>
       <div>
         <EmailViewActionButton {email} />
       </div>

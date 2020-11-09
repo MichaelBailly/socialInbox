@@ -97,3 +97,35 @@ registerEvent('email:shared', async (payload) => {
     return newList;
   });
 });
+
+registerEvent('email:label:added', async (payload) => {
+  emails.update((list) => {
+    const newList = list.map((email) => {
+      if (payload.emailId === email._id) {
+        const newMail = { ...email };
+        newMail.labels.push(payload.label);
+        return newMail;
+      }
+      return email;
+    });
+
+    return newList;
+  });
+});
+
+registerEvent('email:label:removed', async (payload) => {
+  emails.update((list) => {
+    const newList = list.map((email) => {
+      if (payload.emailId === email._id) {
+        const newMail = { ...email };
+        newMail.labels = newMail.labels.filter(
+          (l) => l._id !== payload.label._id
+        );
+        return newMail;
+      }
+      return email;
+    });
+
+    return newList;
+  });
+});

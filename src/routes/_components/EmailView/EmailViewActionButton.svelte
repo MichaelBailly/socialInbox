@@ -3,9 +3,15 @@ export let email;
 
 import { openModal, closeModal } from '../../../libs/modal/modalService';
 import LabelSelect from '../../_components/Labels/LabelSelect.svelte';
+import { put } from 'api';
 
-const updateLabels = (ids) => {
-  console.log('should set', ids);
+let menuOpened = false;
+
+const updateLabels = async (labelIds) => {
+  console.log('should set', labelIds);
+  closeModal()();
+  menuOpened = false;
+  await put(`/api/emails/${email._id}/labels`, { labelIds });
 }
 
 const openDialog = () => {
@@ -21,9 +27,9 @@ const openDialog = () => {
 }
 </script>
 
-<div class="dropdown is-right is-active">
+<div class="dropdown is-right" class:is-active={menuOpened}>
   <div class="dropdown-trigger">
-    <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu">
+    <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" on:click='{() => menuOpened = !menuOpened}'>
       <span class="icon is-small">
         <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
       </span>

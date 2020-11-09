@@ -1,7 +1,6 @@
 <script>
 export let item;
 export let previousItem;
-export let email;
 
  /*
   {
@@ -44,7 +43,11 @@ onMount(() => {
 </script>
 
 {#if sameUser}
-<div class="same-user-message" class:pending="{item.pending}">{item.body}</div>
+<div class="same-user-message" class:pending="{item.pending}">
+  <span class="chat-message-body has-background-grey-lighter">
+    {item.body}
+  </span>
+</div>
 {:else}
 <article class="media mt-4" class:pending="{item.pending}">
   <figure class="mr-2">
@@ -59,7 +62,10 @@ onMount(() => {
         {#if showEmail}<small>{item.user.email}</small>{/if}
         <small>{dateDisplay}</small>
         <br>
-        {item.body}
+        <span class="chat-message-body has-background-grey-lighter">
+          {item.body}
+        </span>
+
       </p>
     </div>
   </div>
@@ -84,5 +90,11 @@ img {
   display: inline-block;
   width: 1.33em;
   height: 1.33em;
+}
+
+.chat-message-body {
+  padding: 0.2rem 1rem;
+  border-radius: 30px;
+  margin-left: -1rem;
 }
 </style>

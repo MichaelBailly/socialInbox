@@ -3,6 +3,7 @@ import { createEventDispatcher } from 'svelte';
 import EmailRecipientDisplay from './EmailRecipientDisplay.svelte';
 import ListItemAvatar from './ListItemAvatar.svelte';
 import EmailListItemDate from './EmailListItemDate.svelte';
+import Label from './Labels/Label.svelte';
 
 export let email;
 
@@ -21,6 +22,13 @@ $: subject = email.email.subject ||'No subject';
       </div>
       <div class="subject is-size-6 has-text-weight-bold">{subject}</div>
       <div class="body-preview is-size-7">{email.email.preview || ''}</div>
+      <div>
+        {#each email.labels as label}
+          <span class="pr-2">
+            <Label {label} />
+          </span>
+        {/each}
+      </div>
     </div>
 </div>
 

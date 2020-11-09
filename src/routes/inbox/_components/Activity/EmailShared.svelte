@@ -1,5 +1,4 @@
 <script>
-export let email;
 export let activity;
 
 import { user as userStore, getDisplayName } from '../../../../libs/users';
@@ -17,10 +16,10 @@ $: targetDisplayName = getDisplayName(activity.target);
 
 <ActivityTemplate date="{activity.date}">
 {#if actor}
-<span>You shared the mail <strong>{email.email.subject}</strong> with <em>{targetDisplayName}</em></span>
+<span>You shared this email with <em>{targetDisplayName}</em></span>
 {:else}
 <div>
-  {actorDisplayName} shared the mail <strong>{email.email.subject}</strong> with you
+  {actorDisplayName} shared this email with you
 </div>
 {/if}
 <span slot="icon" class="icon is-medium has-text-link">

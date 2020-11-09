@@ -48,7 +48,16 @@ export async function post(req, res) {
     }
     req.session.user = user;
     res.status(200).json({ user });
-    jwtEvent({ _id: user._id, email: user.email }, jwt);
+    jwtEvent(
+      {
+        _id: user._id,
+        email: user.email,
+        lastname: user.lastname,
+        firstname: user.firstname,
+        displayName: user.displayName,
+      },
+      jwt
+    );
   } catch (e) {
     res.status(401).json({ error: e.message || e, details: e.stack || e });
   }

@@ -1,5 +1,6 @@
 import db from '../../../../backend/mongodb';
 import { addShare } from '../../../../backend/core/commands/email';
+import { getEmailIfAllowed } from '../../../../backend/api-middleware/email-permission';
 
 export async function post(req, res) {
   const currentUser = req.session.user;
@@ -15,24 +16,13 @@ export async function post(req, res) {
       .json({ error: 'Body {userIds[userId]} should be a string' });
   }
 
-  const database = await db();
-  const collection = database.collection('emails');
-  const email = await collection.findOne({ _id: emailId });
+  const email = await getEmailIfAllowed(currentUser._id, emailId);
 
   if (!email) {
-    return res.status(404).json({ error: `email ${emailId} no found` });
+    return;
   }
 
-  // user should have already access to email to share
-  if (
-    !email.users.includes(currentUser._id) &&
-    !email.usersShared.includes(currentUser._id)
-  ) {
-    return res
-      .status(401)
-      .json({ error: 'Not authorized to share this email' });
-  }
-
+  const database = await db();
   const userCollection = database.collection('userinfos');
   const users = await userCollection.find({ _id: { $in: userIds } }).toArray();
 

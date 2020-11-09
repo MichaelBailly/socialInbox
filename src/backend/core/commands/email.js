@@ -34,3 +34,25 @@ export function addShare(user, email, actor, target) {
 
   sendEvent(kafkaMessage);
 }
+
+export async function setLabels(user, email, labels) {
+  const userProj = UserProj.fromObject(user);
+
+  const message = {
+    event: 'email:labels:update',
+    user: userProj,
+    payload: {
+      emailId: email._id,
+      labels: labels.map((l) => ({
+        _id: l._id,
+        name: l.name,
+        colorId: l.colorId,
+      })),
+    },
+  };
+  debug('Publishing to Kafka %O', message);
+
+  const kafkaMessage = KafkaMessage.fromObject(user._id, message);
+
+  await sendEvent(kafkaMessage);
+}

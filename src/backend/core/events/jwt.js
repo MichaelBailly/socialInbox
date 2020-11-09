@@ -28,14 +28,24 @@ export async function jwtTokenReceiver(kafkaMessage) {
     debug('storing JWT token in datastore');
     const database = await db();
     const collection = database.collection('userinfos');
+    const recordedUser = await collection.findOne({ _id: user._id });
+    const updateDoc = {
+      _id: user._id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      displayName: user.displayName,
+      token: kafkaMessage.payload().token,
+    };
+
+    if (!recordedUser) {
+      updateDoc.activity = [];
+    }
+
     const response = await collection.updateOne(
       { _id: user._id },
       {
-        $set: {
-          _id: user._id,
-          email: user.email,
-          token: kafkaMessage.payload().token,
-        },
+        $set: updateDoc,
       },
       {
         upsert: true,

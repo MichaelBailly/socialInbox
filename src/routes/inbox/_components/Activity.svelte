@@ -1,14 +1,15 @@
 <script>
 export let item;
 export let email;
-export let previousItem;
 
 import WorkSpaceActivityEmailShared from './Activity/EmailShared.svelte';
 import WorkSpaceActivityChatStarted from './Activity/ChatStarted.svelte';
+import WorkSpaceActivityEmailLabelAdded from './Activity/EmailLabelAdded.svelte';
 
 const compMap = {
   'email:share': WorkSpaceActivityEmailShared,
   'chat:started': WorkSpaceActivityChatStarted,
+  'email:label:added': WorkSpaceActivityEmailLabelAdded
 };
 
 

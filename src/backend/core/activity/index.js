@@ -19,8 +19,8 @@ export async function recordActivity(
     debug('Activity should have an actor: %O', activity);
     return false;
   }
-  if (!activity.actor.id) {
-    debug('Activity should have an actor id: %O', activity);
+  if (!activity.actor._id) {
+    debug('Activity should have an actor _id: %O', activity);
     return false;
   }
   if (!activity.date) {

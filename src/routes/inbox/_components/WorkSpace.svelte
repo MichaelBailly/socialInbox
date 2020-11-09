@@ -14,7 +14,10 @@ let messages = writable([]);
 let cancelStoreSubscription = null;
 let inputValue = '';
 let wrapperElement;
-let autoscroll;
+let autoscroll = {
+  lastEmailId: null,
+  on: false,
+};
 
 $: activities = email.activity.map(a => ({...a, component: Activity, ts: new Date(a.date).getTime()}));
 $: chatMessages = $messages.map(m => ({...m, component: ChatMessage, ts: new Date(m.date).getTime()}));
@@ -55,12 +58,15 @@ const sendMessage = async () => {
 }
 
 beforeUpdate(async () => {
-  autoscroll = wrapperElement && (wrapperElement.offsetHeight + wrapperElement.scrollTop) > (wrapperElement.scrollHeight - 20);
+  autoscroll.on = wrapperElement && (wrapperElement.offsetHeight + wrapperElement.scrollTop) > (wrapperElement.scrollHeight - 20);
   applyState();
 });
 
 afterUpdate(() => {
-  if (autoscroll) wrapperElement.scrollTo(0, wrapperElement.scrollHeight);
+  if (autoscroll.lastEmailId === email._id && autoscroll.on) {
+    wrapperElement.scrollTo(0, wrapperElement.scrollHeight);
+  }
+  autoscroll.lastEmailId = email._id;
 });
 
 </script>

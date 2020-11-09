@@ -1,6 +1,7 @@
 import logger from '../../../backend/core/logger';
 import createConsumer from '../../../backend/kafka/notifications/consumer';
 import db from '../../../backend/mongodb';
+import { getEmailIfAllowed } from '../../../backend/api-middleware/email-permission';
 
 const debugG = logger.extend('sse');
 let sseSessionCounter = 0;
@@ -55,6 +56,10 @@ export async function get(req, res) {
       chatStartedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'label:created') {
       labelCreatedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'email:label:added') {
+      emailLabelAddedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'email:label:removed') {
+      emailLabelRemovedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -77,54 +82,23 @@ data: ${JSON.stringify(payload)}
   };
 }
 
-const emailSharedEvent = async (kafkaMessage, { userId, debug, send }) => {
-  const payload = kafkaMessage.payload();
-  const database = await db();
-  const collection = database.collection('emails');
-  const email = await collection.findOne({ _id: payload.emailId });
-  if (!email) {
-    debug(`Email ${payload.emailId} not found`);
-    return;
-  }
-
-  if (email.users.concat(email.usersShared).includes(userId)) {
-    send(kafkaMessage.event(), payload);
-  }
-};
-
-const chatMessagePostedEvent = async (
-  kafkaMessage,
-  { userId, debug, send }
-) => {
-  const payload = kafkaMessage.payload();
-  const database = await db();
-  const collection = database.collection('emails');
-  const email = await collection.findOne({ _id: payload.emailId });
-  if (!email) {
-    debug(`Email ${payload.emailId} not found`);
-    return;
-  }
-
-  if (email.users.concat(email.usersShared).includes(userId)) {
-    send(kafkaMessage.event(), payload);
-  }
-};
-
-const chatStartedEvent = async (kafkaMessage, { userId, debug, send }) => {
-  const payload = kafkaMessage.payload();
-  const database = await db();
-  const collection = database.collection('emails');
-  const email = await collection.findOne({ _id: payload.emailId });
-  if (!email) {
-    debug(`Email ${payload.emailId} not found`);
-    return;
-  }
-
-  if (email.users.concat(email.usersShared).includes(userId)) {
-    send(kafkaMessage.event(), payload);
-  }
-};
-
-const labelCreatedEvent = async (kafkaMessage, { userId, send }) => {
+const sendToAll = async (kafkaMessage, { send }) => {
   send(kafkaMessage.event(), kafkaMessage.payload());
 };
+
+const sendIfUserIsInEmail = async (kafkaMessage, { userId, send, debug }) => {
+  const payload = kafkaMessage.payload();
+  const email = getEmailIfAllowed(userId, payload.emailId);
+  if (!email) {
+    debug('email not found or user not in email users/usersShared');
+    return;
+  }
+  send(kafkaMessage.event(), payload);
+};
+
+const emailSharedEvent = sendIfUserIsInEmail;
+const chatMessagePostedEvent = sendIfUserIsInEmail;
+const chatStartedEvent = sendIfUserIsInEmail;
+const labelCreatedEvent = sendToAll;
+const emailLabelAddedEvent = sendIfUserIsInEmail;
+const emailLabelRemovedEvent = sendIfUserIsInEmail;
