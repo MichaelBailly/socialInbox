@@ -1,3 +1,12 @@
+<script context="module">
+	import { user as localUser } from '../libs/users';
+	export function preload({ params }, { user }) {
+		if (user) {
+			localUser.set(user);
+		}
+	}
+</script>
+
 <script>
 import { onMount } from 'svelte';
 import Nav from '../components/Nav.svelte';

@@ -1,14 +1,3 @@
-<script context="module">
-	import { user as localUser } from '../../libs/users';
-	export function preload({ params }, { user }) {
-		if (!user) {
-			this.redirect(302, `/login`);
-		} else {
-			localUser.set(user);
-		}
-	}
-</script>
-
 <div class="columns p-0 m-0">
 
 	<div class="column menu-column">

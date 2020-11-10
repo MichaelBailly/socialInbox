@@ -44,7 +44,6 @@ const onClick = () => {
   border-bottom: 1px solid #ddd;
   display: flex;
   flex-direction: row;
-  width: 100%;
   box-sizing: border-box;
   cursor: pointer;
 }
@@ -56,6 +55,8 @@ const onClick = () => {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 .head{
   display: flex;
@@ -66,7 +67,13 @@ const onClick = () => {
 .body-preview {
   flex: 1;
   min-width: 0;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
 
+.subject {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 </style>

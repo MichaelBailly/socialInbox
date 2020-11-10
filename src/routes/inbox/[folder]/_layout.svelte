@@ -65,6 +65,8 @@
 	white-space: nowrap;
 	display: flex;
 	flex-direction: column;
+	flex: 1 1 auto;
+  overflow-y: auto;
 }
 .content-column {
 	overflow: auto;
