@@ -55,6 +55,7 @@ export const fetchEmails = async () => {
   if (!testFetch()) {
     return;
   }
+  console.log('fetchemail starts');
   requestEmails();
 
   try {

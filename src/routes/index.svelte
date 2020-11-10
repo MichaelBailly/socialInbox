@@ -4,7 +4,7 @@
 		if (!user) {
 			this.redirect(302, `/login`);
 		} else {
-			localUser.set(user);
+			this.redirect(302, `/inbox`);
 		}
 	}
 </script>

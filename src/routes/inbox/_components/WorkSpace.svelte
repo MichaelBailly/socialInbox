@@ -11,7 +11,6 @@ import Activity from './Activity.svelte';
 
 let chat;
 let messages = writable([]);
-let cancelStoreSubscription = null;
 let inputValue = '';
 let wrapperElement;
 let autoscroll = {
@@ -19,8 +18,20 @@ let autoscroll = {
   on: false,
 };
 
+$: {
+  if (email && email._id && (!chat || chat.id !== email._id)) {
+    const [chatInstance, store] = getChat(email._id);
+    messages = store;
+    chatMessages = [];
+    chat = chatInstance;
+    chatInstance.loadPrevious();
+    console.log('messages', $messages);
+    console.log('chat messages', chatMessages);
+  }
+};
 $: activities = email.activity.map(a => ({...a, component: Activity, ts: new Date(a.date).getTime()}));
 $: chatMessages = $messages.map(m => ({...m, component: ChatMessage, ts: new Date(m.date).getTime()}));
+$: console.log(chatMessages);
 $: stream = activities.concat(chatMessages).sort((m1, m2) => m1.ts - m2.ts);
 
 const keyWatcher = (event) => {
@@ -28,22 +39,6 @@ const keyWatcher = (event) => {
     sendMessage();
   }
 };
-
-const applyState = async () => {
-  if (!email || !email._id) {
-    return;
-  } else if (chat && chat.id === email._id) {
-    return;
-  }
-
-  cancelStoreSubscription && cancelStoreSubscription();
-  messages.set([]);
-
-  const [chatInstance, store] = getChat(email._id);
-  cancelStoreSubscription = store.subscribe(value => messages.set(value));
-  await chatInstance.loadPrevious();
-  chat = chatInstance;
-}
 
 const sendMessage = async () => {
   if (!inputValue || !inputValue.length) {
@@ -59,7 +54,6 @@ const sendMessage = async () => {
 
 beforeUpdate(async () => {
   autoscroll.on = wrapperElement && (wrapperElement.offsetHeight + wrapperElement.scrollTop) > (wrapperElement.scrollHeight - 20);
-  applyState();
 });
 
 afterUpdate(() => {

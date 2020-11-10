@@ -1,19 +1,22 @@
 <script>
-import { createEventDispatcher } from 'svelte';
+import { goto } from '@sapper/app';
 import EmailRecipientDisplay from './EmailRecipientDisplay.svelte';
 import ListItemAvatar from './ListItemAvatar.svelte';
 import EmailListItemDate from './EmailListItemDate.svelte';
 import Label from './Labels/Label.svelte';
 
 export let email;
-
-const dispatch = createEventDispatcher();
+export let baseHref;
 
 $: from = email.email.from[0] ||'unknown';
 $: subject = email.email.subject ||'No subject';
 
+const onClick = () => {
+  goto(`${baseHref}/${email._id}`);
+};
+
 </script>
-<div class="columns mail-item px-2 py-4" on:click="{() => dispatch('display', email)}">
+<div class="columns mail-item px-2 py-4" on:click={onClick}>
     <div class="avatar pr-2"><ListItemAvatar resource="{from}" size="64"></ListItemAvatar></div>
     <div class="contents">
       <div class="head">
