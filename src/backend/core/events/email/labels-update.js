@@ -78,3 +78,7 @@ function getDifferences(emailLabels, requestLabels) {
 
   return [added, removed];
 }
+
+export const EVENTS = {
+  'email:labels:update': emailLabelsUpdateReceiver,
+};

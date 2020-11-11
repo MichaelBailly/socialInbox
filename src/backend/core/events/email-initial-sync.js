@@ -104,3 +104,7 @@ function userState(email) {
   }
   return localUserState;
 }
+
+export const EVENTS = {
+  'email:initial-sync': emailInitialSyncReceiver,
+};

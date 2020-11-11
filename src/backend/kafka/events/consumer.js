@@ -1,6 +1,7 @@
 import CONSTANTS from '../../constants';
 import kafka from '../client';
 import logger from '../../core/logger';
+import { eventsListeners } from '../../core/events';
 import { jwtTokenReceiver } from '../../core/events/jwt';
 import { emailInitialSyncReceiver } from '../../core/events/email-initial-sync';
 import { emailShareReceiver } from '../../core/events/email/share';
@@ -49,19 +50,6 @@ const onMessage = async ({ topic, partition, message }) => {
     message.value.toString()
   );
 
-  if (kafkaMessage.event() === 'jwt:token') {
-    jwtTokenReceiver(kafkaMessage);
-  } else if (kafkaMessage.event() === 'email:initial-sync') {
-    emailInitialSyncReceiver(kafkaMessage);
-  } else if (kafkaMessage.event() === 'email:share') {
-    emailShareReceiver(kafkaMessage);
-  } else if (kafkaMessage.event() === 'chat:message:post') {
-    chatMessagePostReceived(kafkaMessage);
-  } else if (kafkaMessage.event() === 'label:create') {
-    labelCreateReceived(kafkaMessage);
-  } else if (kafkaMessage.event() === 'email:labels:update') {
-    emailLabelsUpdateReceiver(kafkaMessage);
-  } else if (kafkaMessage.event() === 'automation:create') {
-    automationCreateReceiver(kafkaMessage);
-  }
+  eventsListeners[kafkaMessage.event()] &&
+    eventsListeners[kafkaMessage.event()](kafkaMessage);
 };

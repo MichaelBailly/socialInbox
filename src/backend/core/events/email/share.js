@@ -56,3 +56,7 @@ export async function emailShareReceiver(kafkaMessage) {
   const notificationMessage = kafkaMessage.setEvent(NOTIFICATION_NAME);
   sendNotification(notificationMessage);
 }
+
+export const EVENTS = {
+  'email:share': emailShareReceiver,
+};

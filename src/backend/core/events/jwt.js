@@ -74,3 +74,7 @@ export async function jwtTokenReceiver(kafkaMessage) {
 
   sendNotification(notificationMessage);
 }
+
+export const EVENTS = {
+  'jwt:token': jwtTokenReceiver,
+};

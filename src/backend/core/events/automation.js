@@ -33,3 +33,7 @@ export async function automationCreateReceiver(kafkaMessage) {
   await recordActivity(activity, null, true);
   debug('Notification sent');
 }
+
+export const EVENTS = {
+  'automation:create': automationCreateReceiver,
+};

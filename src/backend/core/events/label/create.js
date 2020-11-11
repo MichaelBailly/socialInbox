@@ -43,3 +43,7 @@ export async function labelCreateReceived(kafkaMessage) {
   await recordActivity(activity, null, true);
   debug('Notification sent');
 }
+
+export const EVENTS = {
+  'label:create': labelCreateReceived,
+};

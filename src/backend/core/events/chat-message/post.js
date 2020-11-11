@@ -63,3 +63,7 @@ const checkActivity = async (database, chatMessage) => {
   const activity = new ChatStartActivity(UserProj.fromObject(chatMessage.user));
   recordActivity(activity, chatMessage.emailId, true);
 };
+
+export const EVENTS = {
+  'chat:message:post': chatMessagePostReceived,
+};
