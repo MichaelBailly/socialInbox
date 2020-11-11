@@ -7,6 +7,7 @@
 			</p>
 			<ul class="menu-list">
 				<li><a href="/settings/labels">Labels</a></li>
+				<li><a href="/settings/automation">Automation</a></li>
 			</ul>
 		</aside>
   </div>

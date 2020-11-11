@@ -3,20 +3,13 @@ export let labelIds;
 export let onYes;
 export let onCancel;
 
-import { labels } from '../../../libs/labels/labelProvider';
-import Label from './Label.svelte';
+import LabelSelectField from './LabelSelectField.svelte';
 
 let selectedIds = [...labelIds];
 let labelStr = '';
 
-$: labelList = labelStr.length ? $labels.filter(l => l.name.toLowerCase().indexOf(labelStr.toLowerCase()) >= 0) : $labels;
-
-const toggle = (label) => {
-  if (selectedIds.includes(label._id)) {
-    selectedIds = selectedIds.filter(id => id !== label._id);
-  } else {
-    selectedIds = [ ...selectedIds, label._id ];
-  }
+const onValue = (event) => {
+  selectedIds = event.detail.map(l => l._id);
 }
 
 const validate = () => {
@@ -37,15 +30,7 @@ const validate = () => {
     </p>
   </div>
   <div class="labels-container">
-    {#each labelList as label (label._id)}
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <a class="panel-block" class:selected="{selectedIds.includes(label._id)}" on:click='{() => toggle(label)}'>
-      <span class="panel-icon">
-        <i class="fas fa-check" aria-hidden="true"></i>
-      </span>
-      <Label {label} />
-    </a>
-    {/each}
+    <LabelSelectField labelIds={labelIds} {labelStr} on:labels={onValue} />
   </div>
   <div class="panel-block">
     <div class="field is-grouped">
@@ -74,14 +59,5 @@ nav {
     flex-grow: 1;
     overflow-y: auto;
   }
-}
-
-a span {
-  transform: scale(0);
-  transition: transform ease 0.2s;
-}
-
-a.selected span {
-  transform: scale(1);
 }
 </style>

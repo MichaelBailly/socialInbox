@@ -48,7 +48,7 @@ const recordGlobalActivity = async (activity) => {
     const database = await db();
     const collection = database.collection('userinfos');
     const response = await collection.updateOne(
-      { _id: activity.actor.id },
+      { _id: activity.actor._id },
       { $push: { activity } }
     );
 

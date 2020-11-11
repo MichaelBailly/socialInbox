@@ -6,7 +6,7 @@ const debug = logger.extend('mongodb');
 
 let dbPromise;
 
-const db = async() => {
+const db = async () => {
   const client = await getDbPromise();
 
   return client.db(CONSTANTS.MONGODB.DATABASE);
@@ -14,7 +14,9 @@ const db = async() => {
 
 const getDbPromise = () => {
   if (!dbPromise) {
-    const client = new MongoClient(CONSTANTS.MONGODB.CONNECTION, { useUnifiedTopology: true });
+    const client = new MongoClient(CONSTANTS.MONGODB.CONNECTION, {
+      useUnifiedTopology: true,
+    });
     dbPromise = client.connect();
     dbPromise
       .then(() => debug('connected to server'))
@@ -26,3 +28,8 @@ const getDbPromise = () => {
 };
 
 export default db;
+
+export async function dbCol(name) {
+  const database = await db();
+  return database.collection(name);
+}

@@ -1,4 +1,3 @@
-import sendNotification from '../../../kafka/notifications/producer';
 import KafkaMessage from '../../../kafka/kafka-message';
 import db from '../../../mongodb';
 import logger from '../../logger';

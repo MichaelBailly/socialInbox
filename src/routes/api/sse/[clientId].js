@@ -60,6 +60,8 @@ export async function get(req, res) {
       emailLabelAddedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'email:label:removed') {
       emailLabelRemovedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'automation:created') {
+      automationCreatedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -102,3 +104,4 @@ const chatStartedEvent = sendIfUserIsInEmail;
 const labelCreatedEvent = sendToAll;
 const emailLabelAddedEvent = sendIfUserIsInEmail;
 const emailLabelRemovedEvent = sendIfUserIsInEmail;
+const automationCreatedEvent = sendToAll;
