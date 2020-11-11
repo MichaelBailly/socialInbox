@@ -62,6 +62,8 @@ export async function get(req, res) {
       emailLabelRemovedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'automation:created') {
       automationCreatedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'email:delivered') {
+      emailDeliveredEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -90,11 +92,23 @@ const sendToAll = async (kafkaMessage, { send }) => {
 
 const sendIfUserIsInEmail = async (kafkaMessage, { userId, send, debug }) => {
   const payload = kafkaMessage.payload();
-  const email = getEmailIfAllowed(userId, payload.emailId);
+  const email = await getEmailIfAllowed(userId, payload.emailId);
   if (!email) {
     debug('email not found or user not in email users/usersShared');
     return;
   }
+  send(kafkaMessage.event(), payload);
+};
+
+const emailDeliveredEvent = async (kafkaMessage, { userId, send, debug }) => {
+  const payload = { ...kafkaMessage.payload() };
+  const email = await getEmailIfAllowed(userId, payload.emailId);
+  if (!email) {
+    debug('email not found or user not in email users/usersShared');
+    return;
+  }
+  payload.email = email;
+
   send(kafkaMessage.event(), payload);
 };
 

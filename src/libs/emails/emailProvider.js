@@ -67,19 +67,10 @@ export const fetchEmails = async () => {
   }
 };
 
-registerEvent('email:shared', async (payload) => {
-  let email;
-  try {
-    const data = await get(`/api/emails/${payload.emailId}`);
-    email = data.email;
-  } catch (e) {
-    console.log('Error: unable to fetch email', payload.emailId, payload);
-    return;
-  }
-
+const insertEmail = (email) => {
   emails.update((list) => {
     const newList = [...list];
-    const index = list.findIndex((e) => e._id === payload.emailId);
+    const index = newList.findIndex((e) => e._id === email._id);
     if (index < 0) {
       // new email
 
@@ -97,6 +88,19 @@ registerEvent('email:shared', async (payload) => {
 
     return newList;
   });
+};
+
+registerEvent('email:shared', async (payload) => {
+  let email;
+  try {
+    const data = await get(`/api/emails/${payload.emailId}`);
+    email = data.email;
+  } catch (e) {
+    console.log('Error: unable to fetch email', payload.emailId, payload);
+    return;
+  }
+
+  insertEmail(email);
 });
 
 registerEvent('email:label:added', async (payload) => {
@@ -129,4 +133,8 @@ registerEvent('email:label:removed', async (payload) => {
 
     return newList;
   });
+});
+
+registerEvent('email:delivered', async (payload) => {
+  insertEmail(payload.email);
 });
