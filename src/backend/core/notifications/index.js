@@ -1,6 +1,7 @@
 import CONSTANTS from '../../constants';
 import logger from '../logger';
 import createConsumer from '../../kafka/notifications/consumer';
+import { NOTIFICATIONS as N_EMAIL } from './email';
 
 const debug = logger.extend('notifications');
 
@@ -37,9 +38,11 @@ const callListeners = (listeners, kafkaMessage) => {
   debug('%i listerners from event %s', listeners.length, kafkaMessage.event());
   listeners.forEach((callback) => {
     try {
-      callback(kafkaMessage);
+      callback({ kafkaMessage });
     } catch (e) {
       debug('callback failed for %s: %O', kafkaMessage.event(), e);
     }
   });
 };
+
+Object.keys(N_EMAIL).forEach((event) => onNotification(event, N_EMAIL[event]));

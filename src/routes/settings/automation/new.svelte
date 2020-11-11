@@ -1,6 +1,8 @@
 <script>
 import { goto } from '@sapper/app';
 import TriggerTitle from './_components/Trigger/Title.svelte';
+import TriggerFrom from './_components/Trigger/From.svelte';
+import TriggerRecipient from './_components/Trigger/Recipient.svelte';
 import Action from './_components/Action/Action.svelte';
 import Automation from '../../../shared/automation.js';
 import { post } from 'api';
@@ -17,7 +19,9 @@ let isRecording = false;
 let helperHidden = false;
 
 let triggerHash = {
-  'title': TriggerTitle,
+  title: TriggerTitle,
+  from: TriggerFrom,
+  recipient: TriggerRecipient,
 }
 
 $: {
@@ -160,7 +164,7 @@ addAction();
                   <select bind:value={triggerName}>
                     <option value="">...</option>
                     <option value="title">title contains...</option>
-                    <option value="sender">Expeditor contains...</option>
+                    <option value="from">Expeditor contains...</option>
                     <option value="recipient">Recipient contains...</option>
                   </select>
               </div>

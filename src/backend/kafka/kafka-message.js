@@ -1,4 +1,5 @@
 import Actor from '../../shared/actor';
+import { ObjectId } from 'mongodb';
 
 export default class KafkaMessage {
   constructor(key, object) {
@@ -52,11 +53,15 @@ export default class KafkaMessage {
       );
     }
 
-    if (!key || !(typeof key === 'string')) {
-      throw new Error('kafka message should have a key');
+    const parsedKey = key instanceof ObjectId ? key.toString() : key;
+
+    if (!parsedKey || !(typeof parsedKey === 'string')) {
+      throw new Error(
+        'kafka message should have a key. The key should be a string or an ObjectId'
+      );
     }
 
-    return new KafkaMessage(key, {
+    return new KafkaMessage(parsedKey, {
       event: object.event,
       payload: object.payload,
       sender: object.sender,
