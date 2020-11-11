@@ -64,7 +64,7 @@ const sendGlobalActivity = (activity) => {
   const payload = { ...activity };
   const kafkaMessage = KafkaMessage.fromObject(activity.actor._id, {
     event: payload.name,
-    user: payload.actor,
+    sender: payload.actor,
     payload,
   });
   sendNotification(kafkaMessage);
@@ -91,7 +91,7 @@ const sendEmailActivity = (activity, emailId) => {
   const payload = { ...activity, emailId };
   const kafkaMessage = KafkaMessage.fromObject(activity.actor._id, {
     event: payload.name,
-    user: payload.actor,
+    sender: payload.actor,
     payload,
   });
   sendNotification(kafkaMessage);

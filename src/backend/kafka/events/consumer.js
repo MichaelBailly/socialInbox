@@ -38,10 +38,16 @@ export default async function run() {
 }
 
 const onMessage = async ({ topic, partition, message }) => {
-  const kafkaMessage = KafkaMessage.fromKafka(
-    message.key.toString(),
-    message.value.toString()
-  );
+  let kafkaMessage;
+  try {
+    kafkaMessage = KafkaMessage.fromKafka(
+      message.key.toString(),
+      message.value.toString()
+    );
+  } catch (e) {
+    debug('message received, conversion to kafkaMessage failed: %s', e.message);
+  }
+  debug('message received. Event=%s', kafkaMessage.event());
 
   eventsListeners[kafkaMessage.event()] &&
     eventsListeners[kafkaMessage.event()](kafkaMessage);

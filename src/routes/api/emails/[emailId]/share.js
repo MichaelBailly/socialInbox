@@ -16,7 +16,7 @@ export async function post(req, res) {
       .json({ error: 'Body {userIds[userId]} should be a string' });
   }
 
-  const email = await getEmailIfAllowed(currentUser._id, emailId);
+  const email = await getEmailIfAllowed(currentUser, emailId);
 
   if (!email) {
     return;

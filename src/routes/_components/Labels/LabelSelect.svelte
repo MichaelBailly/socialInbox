@@ -4,6 +4,7 @@ export let onYes;
 export let onCancel;
 
 import LabelSelectField from './LabelSelectField.svelte';
+import { labels } from '../../../libs/labels/labelProvider';
 
 let selectedIds = [...labelIds];
 let labelStr = '';
@@ -29,9 +30,17 @@ const validate = () => {
       </span>
     </p>
   </div>
+  {#if $labels.length}
   <div class="labels-container">
     <LabelSelectField labelIds={labelIds} {labelStr} on:labels={onValue} />
   </div>
+  {:else}
+  <div class="no-labels">
+    <div>
+      No labels available. <a href="/settings/labels">Create one here</a>.
+    </div>
+  </div>
+  {/if}
   <div class="panel-block">
     <div class="field is-grouped">
       <p class="control">
@@ -58,6 +67,13 @@ nav {
   .labels-container {
     flex-grow: 1;
     overflow-y: auto;
+  }
+
+  .no-labels {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

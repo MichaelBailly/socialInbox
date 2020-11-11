@@ -12,7 +12,7 @@ export async function post(req, res) {
   const currentUser = req.session.user;
   const emailId = req.params.emailId;
   debug('POST: checking permissions');
-  if (!(await getEmailIfAllowed(currentUser._id, emailId, res))) {
+  if (!(await getEmailIfAllowed(currentUser, emailId, res))) {
     return;
   }
   debug('POST: checking body');
@@ -49,7 +49,7 @@ export async function get(req, res) {
   const currentUser = req.session.user;
   const emailId = req.params.emailId;
 
-  if (!(await getEmailIfAllowed(currentUser._id, emailId, res))) {
+  if (!(await getEmailIfAllowed(currentUser, emailId, res))) {
     return;
   }
 

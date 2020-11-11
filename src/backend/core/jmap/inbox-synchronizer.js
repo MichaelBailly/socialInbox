@@ -14,7 +14,7 @@ export default async function startConsumer() {
       return;
     }
 
-    startSynchronizer(kafkaMessage.user(), kafkaMessage.payload().token);
+    startSynchronizer(kafkaMessage.sender(), kafkaMessage.payload().token);
   });
 }
 

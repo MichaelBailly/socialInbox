@@ -1,7 +1,7 @@
 import logger from '../../../backend/core/logger';
 import createConsumer from '../../../backend/kafka/notifications/consumer';
-import db from '../../../backend/mongodb';
 import { getEmailIfAllowed } from '../../../backend/api-middleware/email-permission';
+import Actor from '../../../shared/actor';
 
 const debugG = logger.extend('sse');
 let sseSessionCounter = 0;
@@ -19,6 +19,7 @@ export async function get(req, res) {
       .json({ error: 'clientId should be at least 12 chars long' });
   }
 
+  const user = Actor.fromUser(req.session.user);
   const userId = req.session.user._id;
   const send = sendEvent(res);
 
@@ -38,6 +39,7 @@ export async function get(req, res) {
   }, 3000);
 
   const eventCallbackArgs = {
+    user,
     userId,
     res,
     debug,
@@ -90,9 +92,9 @@ const sendToAll = async (kafkaMessage, { send }) => {
   send(kafkaMessage.event(), kafkaMessage.payload());
 };
 
-const sendIfUserIsInEmail = async (kafkaMessage, { userId, send, debug }) => {
+const sendIfUserIsInEmail = async (kafkaMessage, { user, send, debug }) => {
   const payload = kafkaMessage.payload();
-  const email = await getEmailIfAllowed(userId, payload.emailId);
+  const email = await getEmailIfAllowed(user, payload.emailId);
   if (!email) {
     debug('email not found or user not in email users/usersShared');
     return;
@@ -100,9 +102,9 @@ const sendIfUserIsInEmail = async (kafkaMessage, { userId, send, debug }) => {
   send(kafkaMessage.event(), payload);
 };
 
-const emailDeliveredEvent = async (kafkaMessage, { userId, send, debug }) => {
+const emailDeliveredEvent = async (kafkaMessage, { user, send, debug }) => {
   const payload = { ...kafkaMessage.payload() };
-  const email = await getEmailIfAllowed(userId, payload.emailId);
+  const email = await getEmailIfAllowed(user, payload.emailId);
   if (!email) {
     debug('email not found or user not in email users/usersShared');
     return;

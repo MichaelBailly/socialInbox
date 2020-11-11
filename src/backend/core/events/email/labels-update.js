@@ -3,14 +3,13 @@ import db from '../../../mongodb';
 import logger from '../../logger';
 import EmailLabelAddedActivity from '../../../../shared/email-label-added-activity';
 import EmailLabelRemovedActivity from '../../../../shared/email-label-removed-activity';
-import UserProj from '../../../../shared/user-proj';
 import { getEmailIfAllowed } from '../../../api-middleware/email-permission';
 import { ObjectId } from 'mongodb';
-import KafkaMessage from '../../../kafka/kafka-message';
 
 const debug = logger.extend('events:email:labels:update');
 
 export async function emailLabelsUpdateReceiver(kafkaMessage) {
+  debug('starts');
   const payload = kafkaMessage.payload();
   const emailId = payload.emailId;
   const labels = payload.labels.map((label) => ({
@@ -21,9 +20,12 @@ export async function emailLabelsUpdateReceiver(kafkaMessage) {
   const database = await db();
   const collection = database.collection('emails');
 
-  const email = await getEmailIfAllowed(kafkaMessage.user()._id, emailId);
+  const email = await getEmailIfAllowed(kafkaMessage.sender(), emailId);
 
   if (!email) {
+    debug(
+      'email not existing, or not allowed to do things on that email. Stop here'
+    );
     return false;
   }
 
@@ -39,6 +41,7 @@ export async function emailLabelsUpdateReceiver(kafkaMessage) {
         },
       }
     );
+    debug('Email labels updated, modifiedCount=%i', modifiedCount);
 
     if (!modifiedCount) {
       throw new Error('No Mongo document has been updated during update query');
@@ -49,10 +52,10 @@ export async function emailLabelsUpdateReceiver(kafkaMessage) {
   }
 
   const addedActivities = added.map(
-    (l) => new EmailLabelAddedActivity(kafkaMessage.user(), emailId, l)
+    (l) => new EmailLabelAddedActivity(kafkaMessage.sender(), emailId, l)
   );
   const removedActivities = removed.map(
-    (l) => new EmailLabelRemovedActivity(kafkaMessage.user(), emailId, l)
+    (l) => new EmailLabelRemovedActivity(kafkaMessage.sender(), emailId, l)
   );
 
   const activities = addedActivities.concat(removedActivities);

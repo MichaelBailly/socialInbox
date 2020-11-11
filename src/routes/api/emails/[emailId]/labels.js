@@ -2,6 +2,7 @@ import { getEmailIfAllowed } from '../../../../backend/api-middleware/email-perm
 import db from '../../../../backend/mongodb';
 import { ObjectId } from 'mongodb';
 import { setLabels } from '../../../../backend/core/commands/email';
+import Actor from '../../../../shared/actor';
 
 export async function put(req, res) {
   const { emailId } = req.params;
@@ -20,7 +21,7 @@ export async function put(req, res) {
     return res.status(400).json({ error: 'Bad format for labelIds.' });
   }
 
-  const email = await getEmailIfAllowed(currentUser._id, emailId);
+  const email = await getEmailIfAllowed(currentUser, emailId);
   if (!email) {
     return;
   }
@@ -36,7 +37,7 @@ export async function put(req, res) {
   }
 
   try {
-    await setLabels(currentUser, email, labels);
+    await setLabels(Actor.fromUser(currentUser), email, labels);
     res.status(201).send('');
   } catch (e) {
     res.status(500).json({ error: e.message, stack: e.stack });

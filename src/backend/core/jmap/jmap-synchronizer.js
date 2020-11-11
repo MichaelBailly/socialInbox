@@ -7,6 +7,7 @@ import { parseISO, sub, isBefore } from 'date-fns';
 import sendEvent from '../../kafka/events/producer';
 import CONSTANTS from '../../constants';
 import { dbCol } from '../../mongodb';
+import Actor from '../../../shared/actor';
 
 const COLLECTION_NAME = 'jmapSynchronizers';
 export default class JmapSynchronizer {
@@ -118,7 +119,7 @@ export default class JmapSynchronizer {
       } else {
         const kafkaMessages = emails.map((email) => {
           return KafkaMessage.fromObject(this.user._id, {
-            user: this.user,
+            sender: Actor.fromUser(this.user),
             event: 'email:sync',
             payload: email,
           });
@@ -230,7 +231,7 @@ export default class JmapSynchronizer {
         })
         .map((email) => {
           return KafkaMessage.fromObject(this.user._id, {
-            user: this.user,
+            sender: Actor.fromUser(this.user),
             event: 'email:initial-sync',
             payload: email,
           });

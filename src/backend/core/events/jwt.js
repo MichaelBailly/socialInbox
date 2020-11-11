@@ -1,4 +1,5 @@
 import KafkaMessage from '../../kafka/kafka-message';
+import Actor from '../../../shared/actor';
 import sendEvent from '../../kafka/events/producer';
 import sendNotification from '../../kafka/notifications/producer';
 import db from '../../mongodb/index';
@@ -11,7 +12,7 @@ const JWT_EVENT = 'jwt:token';
 export default function jwtEvent(user, jwt) {
   const message = {
     event: JWT_EVENT,
-    user: user,
+    sender: Actor.fromUser(user),
     payload: {
       token: jwt,
     },
@@ -23,7 +24,7 @@ export default function jwtEvent(user, jwt) {
 
 export async function jwtTokenReceiver(kafkaMessage) {
   let notificationMessage;
-  const user = kafkaMessage.user();
+  const user = kafkaMessage.sender();
   try {
     debug('storing JWT token in datastore');
     const database = await db();

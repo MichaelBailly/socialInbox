@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import KafkaMessage from '../../../kafka/kafka-message';
 import db from '../../../mongodb';
 import logger from '../../logger';
-import UserProj from '../../../../shared/user-proj';
+import Actor from '../../../../shared/actor';
 import LabelCreateActivity from '../../../../shared/label-create-activity';
 import { recordActivity } from '../../activity/index';
 
@@ -10,7 +10,7 @@ const debug = logger.extend('events:label:create');
 
 const NOTIFICATION_NAME = 'label:created';
 
-export async function labelCreateReceived(kafkaMessage) {
+export async function labelCreateReceiver(kafkaMessage) {
   const label = { ...kafkaMessage.payload() };
   label._id = new ObjectId(label._id);
 
@@ -33,11 +33,11 @@ export async function labelCreateReceived(kafkaMessage) {
   const notificationMessage = KafkaMessage.fromObject(kafkaMessage.key, {
     event: NOTIFICATION_NAME,
     payload: label,
-    user: kafkaMessage.user(),
+    sender: kafkaMessage.sender(),
   });
   debug('Sending kafka notification: %O', notificationMessage);
   const activity = new LabelCreateActivity(
-    UserProj.fromObject(kafkaMessage.user()),
+    Actor.fromObject(kafkaMessage.sender()),
     label
   );
   await recordActivity(activity, null, true);
@@ -45,5 +45,5 @@ export async function labelCreateReceived(kafkaMessage) {
 }
 
 export const EVENTS = {
-  'label:create': labelCreateReceived,
+  'label:create': labelCreateReceiver,
 };

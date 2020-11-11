@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import UserProj from './user-proj';
+import Actor from './actor';
 
 export default class ChatMessage {
   constructor({ emailId, user, uuid, body, date, _id = null }) {
@@ -39,7 +39,7 @@ export default class ChatMessage {
     if (!object.date || !new Date(object.date)) {
       throw new Error('date required, should be a valid date');
     }
-    const userProj = UserProj.fromObject(object.user);
+    const userProj = Actor.fromUser(object.user);
 
     return new ChatMessage({
       emailId: object.emailId,

@@ -3,6 +3,7 @@ import logger from '../../logger/index';
 import { parseISO } from 'date-fns';
 import KafkaMessage from '../../../kafka/kafka-message';
 import sendNotification from '../../../kafka/notifications/producer';
+import Actor from '../../../../shared/actor';
 
 const NOTIFICATION_NAME = 'email:delivered';
 const debug = logger.extend('events:email:helpers');
@@ -94,7 +95,7 @@ export function userState(email) {
 
 export async function sendEmailNotification(user, payload) {
   const kafkaMessage = KafkaMessage.fromObject(user._id, {
-    user,
+    sender: Actor.fromUser(user),
     event: NOTIFICATION_NAME,
     payload,
   });

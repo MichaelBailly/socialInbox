@@ -3,9 +3,7 @@ import kafka from '../client';
 import logger from '../../core/logger';
 
 const debug = logger.extend('kafka-producer');
-
 const producer = kafka.producer();
-
 const connectPromise = producer.connect();
 
 connectPromise

@@ -10,7 +10,7 @@ export default class AutomationCreatedActivity {
 
   static fromKafkaMessage(kafkaMessage) {
     return new AutomationCreatedActivity({
-      actor: kafkaMessage.user(),
+      actor: kafkaMessage.sender(),
       automation: kafkaMessage.payload(),
     });
   }

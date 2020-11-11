@@ -2,7 +2,7 @@ import { store, sendEmailNotification, deliveredNotification } from './helpers';
 
 export async function emailSyncReceiver(kafkaMessage) {
   const email = kafkaMessage.payload();
-  const user = kafkaMessage.user();
+  const user = kafkaMessage.sender();
 
   // store mail.
   // store method handles the fact that it's a insert or an update

@@ -1,3 +1,5 @@
+import Actor from '../../shared/actor';
+
 export default class KafkaMessage {
   constructor(key, object) {
     this.key = key;
@@ -11,8 +13,8 @@ export default class KafkaMessage {
     };
   }
 
-  user() {
-    return this.object.user;
+  sender() {
+    return this.object.sender;
   }
 
   event() {
@@ -38,16 +40,16 @@ export default class KafkaMessage {
       throw new Error('kafka message should have a message payload');
     }
 
-    if (!object.user) {
-      throw new Error('kafka message should have a message user');
+    if (!object.sender) {
+      throw new Error('kafka message should have a message sender');
     }
 
-    if (!object.user._id) {
-      throw new Error('kafka message user should have an _id property');
-    }
-
-    if (!object.user.email) {
-      throw new Error('kafka message user should have an email property');
+    try {
+      Actor.fromObject(object.sender);
+    } catch (e) {
+      throw new Error(
+        `kafka message sender should be a valid Actor: ${e.message}`
+      );
     }
 
     if (!key || !(typeof key === 'string')) {
@@ -57,7 +59,7 @@ export default class KafkaMessage {
     return new KafkaMessage(key, {
       event: object.event,
       payload: object.payload,
-      user: object.user,
+      sender: object.sender,
     });
   }
 

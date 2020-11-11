@@ -1,8 +1,9 @@
 import sendNotification from '../../../kafka/notifications/producer';
-import db from '../../../mongodb';
+import { dbCol } from '../../../mongodb';
 import logger from '../../logger';
 import EmailShareActivity from '../../../../shared/email-share-activity';
-import UserProj from '../../../../shared/user-proj';
+import Actor from '../../../../shared/actor';
+import { getEmailIfAllowed } from '../../../api-middleware/email-permission';
 
 const debug = logger.extend('events:email:share');
 
@@ -11,14 +12,12 @@ const NOTIFICATION_NAME = 'email:shared';
 export async function emailShareReceiver(kafkaMessage) {
   const payload = kafkaMessage.payload();
 
-  const actorProj = UserProj.fromObject(payload.actor);
-  const targetProj = UserProj.fromObject(payload.target);
-  const activity = new EmailShareActivity(actorProj, targetProj);
+  const actor = Actor.fromObject(payload.actor);
+  const target = Actor.fromUser(payload.target);
+  const activity = new EmailShareActivity(actor, target);
 
-  const database = await db();
-  const collection = database.collection('emails');
-
-  const email = await collection.findOne({ _id: payload.emailId });
+  const collection = await dbCol('emails');
+  const email = await getEmailIfAllowed(actor, payload.emailId);
 
   if (!email) {
     debug(`Email id ${payload.emailId} does not exist`);
@@ -26,10 +25,10 @@ export async function emailShareReceiver(kafkaMessage) {
   }
 
   if (
-    email.usersShared.includes(targetProj.id()) ||
-    email.users.includes(targetProj.id())
+    email.usersShared.includes(target.id()) ||
+    email.users.includes(target.id())
   ) {
-    debug(`User ${targetProj.id()} already in email ${email._id}`);
+    debug(`User ${target.id()} already in email ${email._id}`);
     return false;
   }
 
@@ -38,7 +37,7 @@ export async function emailShareReceiver(kafkaMessage) {
       { _id: email._id },
       {
         $push: {
-          usersShared: targetProj.id(),
+          usersShared: target.id(),
           activity,
         },
         $set: { lastModified: new Date() },

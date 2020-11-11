@@ -4,7 +4,7 @@ import db from '../../../mongodb';
 import logger from '../../logger';
 import ChatMessage from '../../../../shared/chat-message';
 import ChatStartActivity from '../../../../shared/chat-start-activity';
-import UserProj from '../../../../shared/user-proj';
+import Actor from '../../../../shared/actor';
 import { identifier } from '../../../../shared/chat-start-activity';
 import { recordActivity } from '../../activity';
 
@@ -37,7 +37,7 @@ export async function chatMessagePostReceived(kafkaMessage) {
   const notificationMessage = KafkaMessage.fromObject(kafkaMessage.key, {
     event: NOTIFICATION_NAME,
     payload: chatMessage,
-    user: { _id: chatMessage.user._id, email: chatMessage.user.email },
+    sender: Actor.fromUser(chatMessage.user),
   });
   debug('Sending kafka notification: %O', notificationMessage);
   sendNotification(notificationMessage);
@@ -45,6 +45,8 @@ export async function chatMessagePostReceived(kafkaMessage) {
   checkActivity(database, chatMessage);
 }
 
+// check if chat:started activity log has already been
+// logged
 const checkActivity = async (database, chatMessage) => {
   const collection = database.collection('emails');
   try {
@@ -60,7 +62,7 @@ const checkActivity = async (database, chatMessage) => {
     return false;
   }
 
-  const activity = new ChatStartActivity(UserProj.fromObject(chatMessage.user));
+  const activity = new ChatStartActivity(Actor.fromUser(chatMessage.user));
   recordActivity(activity, chatMessage.emailId, true);
 };
 

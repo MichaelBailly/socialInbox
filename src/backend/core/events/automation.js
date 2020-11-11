@@ -1,8 +1,6 @@
 import { ObjectId } from 'mongodb';
-import KafkaMessage from '../../kafka/kafka-message';
 import db from '../../mongodb';
 import logger from '../logger';
-import UserProj from '../../../shared/user-proj';
 import AutomationCreatedActivity from '../../../shared/automation-created-activity';
 import { recordActivity } from '../activity/index';
 

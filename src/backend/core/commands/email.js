@@ -1,7 +1,7 @@
 import KafkaMessage from '../../kafka/kafka-message';
 import sendEvent from '../../kafka/events/producer';
 import EmailShareActivity from '../../../shared/email-share-activity';
-import UserProj from '../../../shared/user-proj';
+import Actor from '../../../shared/actor';
 import logger from '../logger';
 
 const debug = logger.extend('commands:email');
@@ -13,15 +13,16 @@ const debug = logger.extend('commands:email');
  * target: userProj: the user for who the mail is shared
  */
 export function addShare(user, email, actor, target) {
-  const actorProj = UserProj.fromObject(actor);
-  const targetProj = UserProj.fromObject(target);
+  const userProj = Actor.fromObject(user);
+  const actorProj = Actor.fromObject(actor);
+  const targetProj = Actor.fromUser(target);
   const activity = new EmailShareActivity(actorProj, targetProj);
 
   console.log('Going to push to Kafka:', activity, JSON.stringify(activity));
 
   const message = {
     event: activity.name,
-    user,
+    sender: userProj,
     payload: {
       emailId: email._id,
       actor: actorProj,
@@ -35,12 +36,10 @@ export function addShare(user, email, actor, target) {
   sendEvent(kafkaMessage);
 }
 
-export async function setLabels(user, email, labels) {
-  const userProj = UserProj.fromObject(user);
-
+export async function setLabels(actor, email, labels) {
   const message = {
     event: 'email:labels:update',
-    user: userProj,
+    sender: Actor.fromObject(actor),
     payload: {
       emailId: email._id,
       labels: labels.map((l) => ({
@@ -50,9 +49,8 @@ export async function setLabels(user, email, labels) {
       })),
     },
   };
-  debug('Publishing to Kafka %O', message);
 
-  const kafkaMessage = KafkaMessage.fromObject(user._id, message);
-
+  const kafkaMessage = KafkaMessage.fromObject(actor._id, message);
+  debug('Sending event %s to kafka', message.event);
   await sendEvent(kafkaMessage);
 }

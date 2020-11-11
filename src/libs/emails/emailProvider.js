@@ -13,22 +13,6 @@ export const errorAddingUser = writable(false);
 
 export const emails = writable([]);
 
-export const myEmails = derived([user, emails], ([$user, $emails]) => {
-  if (!$user._id) {
-    console.log('empty user', $user._id);
-    return [];
-  }
-  return $emails.filter((m) => m.users.includes($user._id));
-});
-
-export const sharedEmails = derived([user, emails], ([$user, $emails]) => {
-  if (!$user._id) {
-    return [];
-  }
-  return $emails.filter((m) => m.usersShared.includes($user._id));
-});
-
-/*
 export const myEmails = derived([user, emails], ([$user, $emails]) =>
   $user._id ? $emails.filter((m) => m.users.includes($user._id)) : []
 );
@@ -36,7 +20,6 @@ export const myEmails = derived([user, emails], ([$user, $emails]) =>
 export const sharedEmails = derived([user, emails], ([$user, $emails]) =>
   $user._id ? $emails.filter((m) => m.usersShared.includes($user._id)) : []
 );
-*/
 
 export const requestEmails = () => isLoading.set(true);
 export const receiveEmailSuccess = (data) => {
