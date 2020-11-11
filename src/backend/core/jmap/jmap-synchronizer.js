@@ -222,7 +222,7 @@ export default class JmapSynchronizer {
         .filter((email) => {
           const date = parseISO(email.receivedAt);
           if (isBefore(date, initialSyncStartDate)) {
-            this.debug('email is more that one month ago old, ignoring');
+            this.debug('email is older than min date, ignoring');
             endLoop = true;
             return false;
           }
