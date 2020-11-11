@@ -11,5 +11,13 @@ const onValue = (event) => {
   dispatch('set', selectedIds);
 }
 </script>
+<div class="action-label">
+  <LabelSelectField labelIds={[]} {labelStr} on:labels={onValue} />
+</div>
 
-<LabelSelectField labelIds={[]} {labelStr} on:labels={onValue} />
+<style>
+.action-label {
+  max-height: 10rem;
+  overflow-y: auto;
+}
+</style>

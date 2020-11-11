@@ -23,15 +23,20 @@ nav {
 	<div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
       <a class="navbar-item" href="/inbox">
-        Home
+        Inbox
       </a>
+    </div>
 
-      <a class="navbar-item" href="/">
-        Documentation
-      </a>
-      <a class="navbar-item" href="/settings">
-        Settings
-      </a>
-		</div>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="/settings" title="Settings">
+            <span class="icon">
+              <i class="fas fa-cog fa-lg"></i>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
 	</div>
 </nav>

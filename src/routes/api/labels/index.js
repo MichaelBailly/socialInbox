@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+import { requireUser } from '../../../backend/api-middleware/user';
 import { createLabel } from '../../../backend/core/commands/label';
 import db from '../../../backend/mongodb';
 
@@ -9,7 +11,10 @@ export async function get(req, res) {
 }
 
 export async function post(req, res) {
-  const currentUser = req.session.user;
+  const currentUser = requireUser(req, res);
+  if (!currentUser) {
+    return;
+  }
 
   if (!req.body) {
     return res.status(400).json({ error: 'No body in POST request' });
@@ -30,10 +35,16 @@ export async function post(req, res) {
       .json({ error: 'No description field in body POST request' });
   }
   const label = {
+    _id: new ObjectId(),
     name: req.body.name,
     description: req.body.description,
     colorId: req.body.colorId,
   };
 
-  createLabel(label, currentUser);
+  try {
+    await createLabel(label, currentUser);
+    res.status(202).json({ _id: label._id });
+  } catch (e) {
+    res.status(500).json({ message: e.message, stack: e.stack });
+  }
 }

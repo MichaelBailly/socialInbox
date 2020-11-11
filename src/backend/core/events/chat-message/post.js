@@ -20,7 +20,7 @@ export async function chatMessagePostReceived(kafkaMessage) {
   const collection = database.collection('chatMessages');
 
   try {
-    const { insertedCount, insertedId } = await collection.insertOne(
+    const { insertedCount } = await collection.insertOne(
       chatMessage.toMongoObject()
     );
 
@@ -29,8 +29,6 @@ export async function chatMessagePostReceived(kafkaMessage) {
         'No Mongo document has been inserted during update query'
       );
     }
-
-    chatMessage._id = insertedId;
   } catch (e) {
     debug('MongoDB document insert failed: %s %s', e.message, e.stack);
     return false;

@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import db from '../../../backend/mongodb';
 import ChatMessage from '../../../shared/chat-message';
 import UserProj from '../../../shared/user-proj';
@@ -23,6 +24,7 @@ export async function post(req, res) {
     date: req.body.date,
     body: req.body.body,
     uuid: req.body.uuid,
+    _id: new ObjectId(),
   };
 
   const message = {
@@ -40,7 +42,7 @@ export async function post(req, res) {
     return res.status(400).json({ error: e.message, stack: e.stack });
   }
 
-  return res.status(201).send('');
+  return res.status(202).json({ _id: body._id });
 }
 
 export async function get(req, res) {

@@ -5,7 +5,7 @@ import logger from '../logger';
 
 const debug = logger.extend('commands:label');
 
-export function createLabel(label, user) {
+export async function createLabel(label, user) {
   const userProj = UserProj.fromObject(user);
   const message = {
     event: 'label:create',
@@ -16,5 +16,5 @@ export function createLabel(label, user) {
 
   const kafkaMessage = KafkaMessage.fromObject(userProj._id, message);
 
-  sendEvent(kafkaMessage);
+  await sendEvent(kafkaMessage);
 }

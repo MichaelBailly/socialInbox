@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import UserProj from './user-proj';
 
 export default class ChatMessage {
@@ -19,7 +20,7 @@ export default class ChatMessage {
       date: this.date,
     };
     if (this._id) {
-      result._id = this._id;
+      result._id = new ObjectId(this._id);
     }
 
     return result;
