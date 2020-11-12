@@ -29,6 +29,10 @@ const getDbPromise = () => {
 
 export default db;
 
+/**
+ * @param {String} name MongoDB collection name
+ * @returns {Promise<import("mongodb").Collection>}
+ */
 export async function dbCol(name) {
   const database = await db();
   return database.collection(name);

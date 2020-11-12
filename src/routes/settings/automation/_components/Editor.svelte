@@ -1,21 +1,21 @@
 <script>
+export let automation = {
+  name: '',
+  description: '',
+  trigger: {},
+  actions: [],
+};
+console.log('in editor', automation);
 import { goto } from '@sapper/app';
-import TriggerTitle from './_components/Trigger/Title.svelte';
-import TriggerFrom from './_components/Trigger/From.svelte';
-import TriggerRecipient from './_components/Trigger/Recipient.svelte';
-import Action from './_components/Action/Action.svelte';
-import Automation from '../../../shared/automation.js';
-import { post } from 'api';
+import TriggerTitle from './Trigger/Title.svelte';
+import TriggerFrom from './Trigger/From.svelte';
+import TriggerRecipient from './Trigger/Recipient.svelte';
+import Action from './Action/Action.svelte';
+import Automation from '../../../../shared/automation.js';
+import { post, put } from 'api';
 
-let triggerName = '';
-let triggerValue = '';
-let automationName = '';
-let automationDescription = '';
-
-let actions = [];
 let newActionPossible = false;
 let isAutomationValid = false;
-let isRecording = false;
 let helperHidden = false;
 
 let triggerHash = {
@@ -25,71 +25,69 @@ let triggerHash = {
 }
 
 $: {
-  if (!automationName) {
-    isAutomationValid = false;
-  } else if (!triggerName) {
-    isAutomationValid = false;
-  } else if (!triggerValue) {
-    isAutomationValid = false;
-  } else if (!actions.length) {
-    isAutomationValid = false;
-  } else if (actions.some(a => a.isFilled === false)) {
-    isAutomationValid = false;
+  if (automation) {
+    if (!automation.name) {
+      isAutomationValid = false;
+    } else if (!automation.trigger.processor) {
+      isAutomationValid = false;
+    } else if (!automation.trigger.value) {
+      isAutomationValid = false;
+    } else if (!automation.actions.length) {
+      isAutomationValid = false;
+    } else if (automation.actions.some(a => a.isFilled === false)) {
+      isAutomationValid = false;
+    } else {
+      isAutomationValid = true;
+    }
   } else {
-    isAutomationValid = true;
+    isAutomationValid = false;
   }
-  console.dir({
-    triggerName,
-    triggerValue,
-    actions,
-  });
+  console.dir(automation);
 };
 
 const recordAutomation = async () => {
-  isRecording = true;
-  const automation = Automation.fromObject({
-    name: automationName,
-    description: automationDescription,
-    trigger: {
-      processor: triggerName,
-      value: triggerValue
-    },
-    actions,
-  });
+  const automationProj = Automation.fromObject(automation);
 
   try {
-    const response = await post('/api/automations', automation);
+    let response;
+    if (automation._id) {
+      response = await put(`/api/automations/${automation._id}`, automationProj);
+    } else {
+      response = await post('/api/automations', automationProj);
+    }
     if (!response || !response._id) {
-      throw new Error('POST /api/automation: Unexpected response', response);
+      throw new Error('/api/automations REST call Unexpected response', response);
     }
     goto('/settings/automation');
   } catch(e) {
     console.log('automation recording failed', e);
-    isRecording = false;
   }
 
 }
 
 const onTriggerInput = (event) => {
-  triggerValue = event.detail;
+  let newAutomation = {...automation};
+  newAutomation.trigger.value = event.detail;
+  automation = newAutomation;
 }
 
 const onActionValue = (event) => {
   const { value, processor } = event.detail;
-  let newActions = [...actions];
+  let newActions = [...automation.actions];
   let isValueFilled = Array.isArray(value) ? !!value.length : !!value;
   newActions[event.detail.id] = { value, processor, isFilled: !!(isValueFilled && processor)  };
   console.log(newActions);
-  newActionPossible = actions.some(a => a.isFilled === false) ? true : false;
-  actions = newActions;
+  newActionPossible = newActions.some(a => a.isFilled === false) ? true : false;
+  automation = {...automation, actions: newActions};
 }
 
 
 const addAction = () => {
-  actions = [...actions, {value: '', processor: '', isFilled: false }];
+  let newAutomation = {...automation};
+  newAutomation.actions.push({value: '', processor: '', isFilled: false });
+  automation = newAutomation;
 }
 
-addAction();
 </script>
 <div class="pt-3 pr-3">
   <nav class="level p-3">
@@ -116,6 +114,7 @@ addAction();
           </li>
         </ol>
       </div>
+
       <div>
         <h3 class="title is-5 pb-2">Automation information</h3>
       </div>
@@ -127,7 +126,7 @@ addAction();
         <div class="field-body">
           <div class="field is-expanded">
             <p class="control">
-              <input class="input" type="text" placeholder="Enter Automation Name" bind:value={automationName}>
+              <input class="input" type="text" placeholder="Enter Automation Name" bind:value={automation.name}>
             </p>
           </div>
         </div>
@@ -140,7 +139,7 @@ addAction();
         <div class="field-body">
           <div class="field is-expanded">
             <div class="control">
-              <textarea class="textarea" placeholder="a description to explain why this automation is in place"  bind:value={automationDescription}></textarea>
+              <textarea class="textarea" placeholder="a description to explain why this automation is in place"  bind:value={automation.description}></textarea>
             </div>
           </div>
         </div>
@@ -160,7 +159,7 @@ addAction();
           <div class="field is-expanded">
             <div class="control">
               <div class="select">
-                  <select bind:value={triggerName}>
+                  <select bind:value={automation.trigger.processor}>
                     <option value="">...</option>
                     <option value="title">title contains...</option>
                     <option value="from">Expeditor contains...</option>
@@ -171,7 +170,7 @@ addAction();
           </div>
         </div>
       </div>
-      <svelte:component this={triggerHash[triggerName]} on:input={onTriggerInput} />
+      <svelte:component this={triggerHash[automation.trigger.processor]} value={automation.trigger.value} on:input={onTriggerInput} />
 
       <hr />
 
@@ -179,12 +178,12 @@ addAction();
           <h3 class="title is-5 pb-2">Actions</h3>
       </div>
 
-      {#each actions as action, index}
-        <Action actionId={index} on:action={onActionValue} />
+      {#each automation.actions as action, index}
+        <Action actionId={index} {action} on:action={onActionValue} />
       {/each}
 
       <p class="py-2">
-        <button class="button" disabled={!newActionPossible} on:click={() => addAction(true)}>Add new action</button>
+        <button class="button" disabled={!newActionPossible} on:click={addAction}>Add new action</button>
       </p>
 
       <hr />

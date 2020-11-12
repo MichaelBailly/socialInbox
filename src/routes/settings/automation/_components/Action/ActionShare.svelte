@@ -1,4 +1,6 @@
 <script>
+export let value;
+
 import { createEventDispatcher } from 'svelte';
 import Select from 'svelte-select';
 import { get } from 'api';
@@ -44,7 +46,7 @@ const displayUser = user => {
 // ---------------------------------------------
 
 const dispatch = createEventDispatcher();
-let selectedValue = [];
+let selectedValue = value || [];
 
 
 const onValue = () => {

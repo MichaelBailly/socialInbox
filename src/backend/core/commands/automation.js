@@ -22,3 +22,17 @@ export async function createAutomation(automation, user) {
   await sendEvent(kafkaMessage);
   return automationObj.id();
 }
+
+export async function updateAutomation(automation, user) {
+  const userProj = Actor.fromUser(user);
+  const automationObj = Automation.fromObject(automation);
+  const kafkaMessage = KafkaMessage.fromObject(user._id, {
+    event: 'automation:update',
+    sender: userProj,
+    payload: automationObj,
+  });
+
+  debug('Publishing to Kafka %O', kafkaMessage);
+  await sendEvent(kafkaMessage);
+  return automationObj;
+}

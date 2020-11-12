@@ -54,3 +54,22 @@ export async function setLabels(actor, email, labels) {
   debug('Sending event %s to kafka', message.event);
   await sendEvent(kafkaMessage);
 }
+
+export async function addLabel(actor, email, label) {
+  const message = {
+    event: 'email:label:add',
+    sender: Actor.fromObject(actor),
+    payload: {
+      emailId: email._id,
+      label: {
+        _id: label._id,
+        name: label.name,
+        colorId: label.colorId,
+      },
+    },
+  };
+
+  const kafkaMessage = KafkaMessage.fromObject(actor._id, message);
+  debug('Sending event %s to kafka', message.event);
+  await sendEvent(kafkaMessage);
+}

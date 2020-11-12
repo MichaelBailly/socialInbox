@@ -5,6 +5,7 @@
 <script>
 import { onMount } from 'svelte';
 import { get } from 'api';
+import AutomationListItem from './_components/AutomationListItem.svelte';
 
 let automationRules = [];
 
@@ -32,7 +33,7 @@ onMount(async () => {
   <div class="contents">
     {#each automationRules as automationRule}
     <div>
-      <p>{automationRule}</p>
+      <p><AutomationListItem automation={automationRule} /></p>
       <hr />
     </div>
     {/each}

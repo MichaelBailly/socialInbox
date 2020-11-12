@@ -1,12 +1,13 @@
 <script>
 export let actionId;
+export let action = {
+  processor: null,
+  value: null,
+};
 
 import { createEventDispatcher } from 'svelte';
 import ActionLabel from './ActionLabel.svelte';
 import ActionShare from './ActionShare.svelte';
-
-let value;
-let processor;
 
 const actionHash = {
   label: ActionLabel,
@@ -16,11 +17,11 @@ const actionHash = {
 const dispatch = createEventDispatcher();
 
 const notify = () => {
-  dispatch('action', { id: actionId, processor, value });
+  dispatch('action', { ...action, id: actionId });
 };
 
 const onSet = (event) => {
-  value = event.detail;
+  action = { ...action, value: event.detail };
   notify();
 }
 </script>
@@ -35,7 +36,7 @@ const onSet = (event) => {
       <div class="control">
         <div class="select">
             <!-- svelte-ignore a11y-no-onchange -->
-            <select bind:value={processor} on:change={notify}>
+            <select bind:value={action.processor} on:change={notify}>
               <option value="">...</option>
               <option value="label">add label...</option>
               <option value="share">share with...</option>
@@ -45,4 +46,4 @@ const onSet = (event) => {
     </div>
   </div>
 </div>
-<svelte:component this={actionHash[processor]} on:set={onSet} />
+<svelte:component this={actionHash[action.processor]} value={action.value} on:set={onSet} />

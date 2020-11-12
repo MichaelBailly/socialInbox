@@ -6,6 +6,7 @@ import { EVENTS as EVENTS5 } from './automation';
 import { EVENTS as EVENTS6 } from './email/initial-sync';
 import { EVENTS as EVENTS7 } from './jwt';
 import { EVENTS as EVENTS8 } from './email/sync';
+import { EVENTS as EVENTS9 } from './email/label-add';
 
 export const eventsListeners = {};
 
@@ -17,3 +18,4 @@ Object.keys(EVENTS5).forEach((k) => (eventsListeners[k] = EVENTS5[k]));
 Object.keys(EVENTS6).forEach((k) => (eventsListeners[k] = EVENTS6[k]));
 Object.keys(EVENTS7).forEach((k) => (eventsListeners[k] = EVENTS7[k]));
 Object.keys(EVENTS8).forEach((k) => (eventsListeners[k] = EVENTS8[k]));
+Object.keys(EVENTS9).forEach((k) => (eventsListeners[k] = EVENTS9[k]));

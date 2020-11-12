@@ -1,5 +1,5 @@
 import logger from '../../logger';
-import { setLabels, addShare } from '../../commands/email';
+import { addLabel, addShare } from '../../commands/email';
 import Actor from '../../../../shared/actor';
 import { dbCol } from '../../../mongodb';
 
@@ -7,14 +7,16 @@ const aDebug = logger.extend('actions');
 
 const labelProcessor = async (email, value, actor) => {
   const debug = aDebug.extend('label');
-  debug(
-    'launching processor on email %s, label %s(%s)',
-    email._id,
-    value._id,
-    value.name
-  );
-  const labels = [...email.labels, ...value];
-  return await setLabels(actor, email, labels);
+  debug('launching processor on email %s, %i labels', email._id, value.length);
+  const labels = [...value];
+  while (labels.length) {
+    const label = labels.shift();
+    try {
+      await addLabel(actor, email, label);
+    } catch (e) {
+      debug('failed on addLabel command: %s', e.message);
+    }
+  }
 };
 
 const shareProcessor = async (email, value, actor) => {
