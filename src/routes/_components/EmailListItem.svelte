@@ -8,6 +8,7 @@ import { chatStates } from '../../libs/chat/chatProvider';
 
 export let email;
 export let baseHref;
+export let selected;
 
 $: from = email.email.from[0] ||'unknown';
 $: subject = email.email.subject ||'No subject';
@@ -18,7 +19,7 @@ const onClick = () => {
 };
 
 </script>
-<div class="columns mail-item px-2 py-4" on:click={onClick}>
+<div class="columns mail-item px-2 py-4" on:click={onClick} class:selected={selected}>
     <div class="avatar pr-2"><ListItemAvatar resource="{from}" size="64"></ListItemAvatar></div>
     <div class="contents">
       <div class="head">
@@ -60,6 +61,10 @@ const onClick = () => {
   flex-direction: row;
   box-sizing: border-box;
   cursor: pointer;
+}
+
+.mail-item.selected {
+  background-color: #e8f2fd;
 }
 .avatar {
   flex-shrink: 0;

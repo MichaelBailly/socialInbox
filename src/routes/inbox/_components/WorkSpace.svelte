@@ -4,7 +4,7 @@ export let email;
 import { afterUpdate, beforeUpdate, onMount } from 'svelte';
 
 import { writable } from 'svelte/store';
-import { getChat } from '../../../libs/chat/chatProvider';
+import { getChat, chatStates } from '../../../libs/chat/chatProvider';
 import EmailView  from '../../_components/EmailView.svelte';
 import ChatMessage from './ChatMessage.svelte';
 import Activity from './Activity.svelte';
@@ -33,12 +33,13 @@ $: {
     chatInstance.loadPrevious();
   }
 };
+$: chatState = $chatStates[email._id] ||{};
 $: activities = email.activity.map(a => ({...a, component: Activity, ts: new Date(a.date).getTime()}));
 $: chatMessages = $messages.map(m => {
   return {
     ...m,
     component: ChatMessage,
-    observer: (m.ts > chat.lastSeen) ? scrollAreaObserver : fakeObserver
+    observer: (m.ts > chatState.readTimestamp) ? scrollAreaObserver : fakeObserver
   };
 });
 $: stream = activities.concat(chatMessages).sort((m1, m2) => m1.ts - m2.ts);

@@ -7,6 +7,7 @@
 </script>
 
 <script>
+	export let segment;
   export let folder;
 
   import { onMount } from 'svelte';
@@ -50,7 +51,7 @@ Loading your mailbox...
 {:then foo}
 	<div class="column list-column">
     {#each $emailsList as email (email._id)}
-    <EmailListItem email="{email}" {baseHref}></EmailListItem>
+    <EmailListItem email="{email}" {baseHref} selected={email._id === segment}></EmailListItem>
     {:else}
     Nothing to display
     {/each}
