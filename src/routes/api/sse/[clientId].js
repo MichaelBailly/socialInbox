@@ -66,6 +66,10 @@ export async function get(req, res) {
       automationCreatedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'email:delivered') {
       emailDeliveredEvent(kafkaMessage, eventCallbackArgs);
+    } else if (
+      kafkaMessage.event() === 'events:chat-message:last-seen-pointer:updated'
+    ) {
+      ChatMessageLastSeenPointerUpdatedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -73,7 +77,6 @@ export async function get(req, res) {
 
   req.on('close', () => {
     debug('Connection closed');
-    console.log(consumer);
     consumer.disconnect();
     clearInterval(pingInterval);
   });
@@ -102,6 +105,12 @@ const sendIfUserIsInEmail = async (kafkaMessage, { user, send, debug }) => {
   send(kafkaMessage.event(), payload);
 };
 
+const sendOnlyToSender = async (kafkaMessage, { userId, send }) => {
+  if (kafkaMessage.sender()._id === userId) {
+    send(kafkaMessage.event(), kafkaMessage.payload());
+  }
+};
+
 const emailDeliveredEvent = async (kafkaMessage, { user, send, debug }) => {
   const payload = { ...kafkaMessage.payload() };
   const email = await getEmailIfAllowed(user, payload.emailId);
@@ -121,3 +130,4 @@ const labelCreatedEvent = sendToAll;
 const emailLabelAddedEvent = sendIfUserIsInEmail;
 const emailLabelRemovedEvent = sendIfUserIsInEmail;
 const automationCreatedEvent = sendToAll;
+const ChatMessageLastSeenPointerUpdatedEvent = sendOnlyToSender;

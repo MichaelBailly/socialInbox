@@ -7,10 +7,8 @@ import Label from '../../_components/Labels/Label.svelte';
 
 
 const createLabel = async (newLabel) => {
-  console.log('create label', newLabel);
   closeModal()();
-  const response = await post('/api/labels', newLabel);
-  console.log('label create response', response);
+  await post('/api/labels', newLabel);
 };
 
 

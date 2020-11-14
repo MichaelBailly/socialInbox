@@ -1,6 +1,7 @@
 <script>
 export let item;
 export let previousItem;
+export let scrollAreaObserver;
 
  /*
   {
@@ -21,6 +22,8 @@ export let previousItem;
 import { isToday, format } from "date-fns";
 import { onMount } from 'svelte';
 import { getUserAvatar, getDisplayName } from '../../../libs/users';
+import { intersect } from '../../_components/actions/intersectionTarget';
+
 
 $: sameUser = previousItem && previousItem.uuid && item.user._id === previousItem.user._id;
 
@@ -28,6 +31,7 @@ let avatarUrl;
 let displayName;
 let showEmail;
 let dateDisplay;
+let dataVisObserver;
 
 onMount(() => {
   avatarUrl = getUserAvatar(item.user, 32);
@@ -39,17 +43,18 @@ onMount(() => {
   } else {
     dateDisplay = format(date, 'P p')
   }
+  dataVisObserver = `${date.getTime()}|${item._id}`;
 });
 </script>
 
 {#if sameUser}
-<div class="same-user-message" class:pending="{item.pending}">
+<div class="same-user-message" use:intersect={scrollAreaObserver} class:pending="{item.pending}" data-o="{dataVisObserver}">
   <span class="chat-message-body has-background-grey-lighter">
     {item.body}
   </span>
 </div>
 {:else}
-<article class="media mt-4" class:pending="{item.pending}">
+<article class="media mt-4" use:intersect={scrollAreaObserver} class:pending="{item.pending}" data-o="{dataVisObserver}">
   <figure class="mr-2">
     <p class="image has-text-centered">
       <img class="is-rounded" src="{avatarUrl}" alt="${displayName} avatar">

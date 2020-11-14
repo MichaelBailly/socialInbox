@@ -18,7 +18,7 @@ export function addShare(user, email, actor, target) {
   const targetProj = Actor.fromUser(target);
   const activity = new EmailShareActivity(actorProj, targetProj);
 
-  console.log('Going to push to Kafka:', activity, JSON.stringify(activity));
+  debug('Going to push to Kafka: %O %s', activity, JSON.stringify(activity));
 
   const message = {
     event: activity.name,

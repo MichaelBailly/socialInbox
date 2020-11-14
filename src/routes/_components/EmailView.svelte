@@ -5,6 +5,7 @@ import EmailViewBody from "./EmailView/EmailViewBody.svelte";
 import EmailViewShare from "./EmailView/EmailViewShare.svelte";
 import EmailViewActionButton from './EmailView/EmailViewActionButton.svelte';
 import Label from './Labels/Label.svelte';
+import UserInline from './User/Inline.svelte';
 
 export let email;
 
@@ -48,14 +49,13 @@ $: recipients = to.concat(cc);
       </div>
     </div>
 
-    <div class="tags mb-0">
-      <span class="tag is-white">From: </span><span class="tag"><EmailRecipientDisplay recipient='{from}'></EmailRecipientDisplay></span>
-    </div>
+
+    <span class="tag is-white">From: </span><UserInline bgclass="has-background-white-ter" user='{from}' />
     {#if recipients.length}
       <div class="tags">
         <span class="tag is-white">To: </span>
         {#each recipients as recipient}
-          <span class="tag"><EmailRecipientDisplay recipient='{recipient}'></EmailRecipientDisplay></span>
+          <UserInline bgclass="has-background-white-ter" user='{recipient}' />
         {/each}
       </div>
     {/if}

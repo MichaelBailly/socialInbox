@@ -9,7 +9,7 @@ export default async function getJWT(serverBase, cookie) {
       Cookie: cookie,
     },
   };
-  const checkStatus = res => {
+  const checkStatus = (res) => {
     if (res.ok) {
       // res.status >= 200 && res.status < 300
       return res;
@@ -21,8 +21,6 @@ export default async function getJWT(serverBase, cookie) {
   const response = await fetch(`${serverBase}/api/jwt/generate`, queryOptions);
   const data = checkStatus(response);
   const jwtResponse = await data.json();
-
-  console.log('JWT', jwtResponse);
 
   return jwtResponse;
 }

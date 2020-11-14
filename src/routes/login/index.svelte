@@ -14,10 +14,6 @@
 
 	const { session } = stores();
 
-	session.subscribe(value => {
-		console.log(value);
-	});
-
 	let username = '';
 	let password = '';
 	let errors = null;

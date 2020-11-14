@@ -5,7 +5,7 @@ export let automation = {
   trigger: {},
   actions: [],
 };
-console.log('in editor', automation);
+
 import { goto } from '@sapper/app';
 import TriggerTitle from './Trigger/Title.svelte';
 import TriggerFrom from './Trigger/From.svelte';
@@ -75,8 +75,7 @@ const onActionValue = (event) => {
   const { value, processor } = event.detail;
   let newActions = [...automation.actions];
   let isValueFilled = Array.isArray(value) ? !!value.length : !!value;
-  newActions[event.detail.id] = { value, processor, isFilled: !!(isValueFilled && processor)  };
-  console.log(newActions);
+  newActions[event.detail.id] = { value, processor, isFilled: !!(isValueFilled && processor) };
   newActionPossible = newActions.some(a => a.isFilled === false) ? true : false;
   automation = {...automation, actions: newActions};
 }

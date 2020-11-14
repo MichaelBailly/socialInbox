@@ -38,12 +38,10 @@ export const fetchEmails = async () => {
   if (!testFetch()) {
     return;
   }
-  console.log('fetchemail starts');
   requestEmails();
 
   try {
     const emailResponse = await get(endpoint);
-    console.log('setting emails to', emailResponse.emails, emailResponse);
     receiveEmailSuccess(emailResponse.emails);
   } catch (e) {
     receiveEmailsError(e);

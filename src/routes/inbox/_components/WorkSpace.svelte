@@ -1,7 +1,7 @@
 <script>
 export let email;
 
-import { afterUpdate, beforeUpdate } from 'svelte';
+import { afterUpdate, beforeUpdate, onMount } from 'svelte';
 
 import { writable } from 'svelte/store';
 import { getChat } from '../../../libs/chat/chatProvider';
@@ -9,10 +9,16 @@ import EmailView  from '../../_components/EmailView.svelte';
 import ChatMessage from './ChatMessage.svelte';
 import Activity from './Activity.svelte';
 
+const fakeObserver = {
+  observe() {},
+  unobserve() {},
+};
+
 let chat;
 let messages = writable([]);
 let inputValue = '';
-let wrapperElement;
+let scrollArea;
+let scrollAreaObserver;
 let autoscroll = {
   lastEmailId: null,
   on: false,
@@ -25,13 +31,16 @@ $: {
     chatMessages = [];
     chat = chatInstance;
     chatInstance.loadPrevious();
-    console.log('messages', $messages);
-    console.log('chat messages', chatMessages);
   }
 };
 $: activities = email.activity.map(a => ({...a, component: Activity, ts: new Date(a.date).getTime()}));
-$: chatMessages = $messages.map(m => ({...m, component: ChatMessage, ts: new Date(m.date).getTime()}));
-$: console.log(chatMessages);
+$: chatMessages = $messages.map(m => {
+  return {
+    ...m,
+    component: ChatMessage,
+    observer: (m.ts > chat.lastSeen) ? scrollAreaObserver : fakeObserver
+  };
+});
 $: stream = activities.concat(chatMessages).sort((m1, m2) => m1.ts - m2.ts);
 
 const keyWatcher = (event) => {
@@ -52,23 +61,45 @@ const sendMessage = async () => {
   inputValue = '';
 }
 
+const scrollAreaCallback = (entries) => {
+  entries.forEach(({ isIntersecting, target }) => {
+    if (!isIntersecting) {
+      return;
+    }
+    const messageData = target.getAttribute('data-o');
+    if (!messageData) {
+      return;
+    }
+    chat.onMessageVisible(messageData);
+  });
+};
+
 beforeUpdate(async () => {
-  autoscroll.on = wrapperElement && (wrapperElement.offsetHeight + wrapperElement.scrollTop) > (wrapperElement.scrollHeight - 20);
+  autoscroll.on = scrollArea && (scrollArea.offsetHeight + scrollArea.scrollTop) > (scrollArea.scrollHeight - 20);
 });
 
 afterUpdate(() => {
   if (autoscroll.lastEmailId === email._id && autoscroll.on) {
-    wrapperElement.scrollTo(0, wrapperElement.scrollHeight);
+    scrollArea.scrollTo(0, scrollArea.scrollHeight);
   }
   autoscroll.lastEmailId = email._id;
 });
 
+onMount(() => {
+  const options = {
+    root: scrollArea,
+    rootMargin: '0px',
+    threshold: 0.8
+  }
+
+  scrollAreaObserver = new IntersectionObserver(scrollAreaCallback, options);
+})
 </script>
 <div class="workspace has-background-light">
-  <div class="scrollable px-6 my-2"  bind:this={wrapperElement}>
+  <div class="scrollable px-6 my-2"  bind:this={scrollArea}>
     <EmailView {email} />
     {#each stream as item, itemIndex}
-      <svelte:component this="{item.component}" {item}  previousItem={stream[itemIndex - 1]} {email} />
+      <svelte:component this="{item.component}" {item} {scrollAreaObserver} previousItem={stream[itemIndex - 1]} {email} />
     {/each}
   </div>
   <div class="field has-addons">

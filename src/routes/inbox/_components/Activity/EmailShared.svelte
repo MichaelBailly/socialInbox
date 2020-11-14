@@ -4,6 +4,7 @@ export let activity;
 import { user as userStore, getDisplayName } from '../../../../libs/users';
 import ActivityTemplate from './ActivityTemplate.svelte';
 import AutomationInlineDisplay from '../../../_components/Automation/InlineDisplay.svelte';
+import UserInline from '../../../_components/User/Inline.svelte';
 
 let user = {};
 
@@ -18,7 +19,7 @@ $: targetDisplayName = getDisplayName(activity.target);
 <ActivityTemplate date="{activity.date}">
 {#if activity.actor.origin === 'user'}
   {#if actor}
-  <span>You shared this email with <em>{targetDisplayName}</em></span>
+  <span>You shared this email with <UserInline user={activity.target} /></span>
   {:else}
   <span>
     {actorDisplayName} shared this email with you

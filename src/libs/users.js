@@ -1,4 +1,11 @@
 import { writable } from 'svelte/store';
+export {
+  cacheStore as userCache,
+  updateCache,
+  getDisplayName,
+} from './users-cache';
+
+import { getDisplayName } from './users-cache';
 
 const user = writable({});
 
@@ -21,20 +28,4 @@ export function getUserAvatar(user, size) {
   }
 
   return avatarUrl;
-}
-
-export function getDisplayName(user) {
-  if (user.displayName) {
-    return user.displayName;
-  }
-  if (user.firstname) {
-    if (user.lastname) {
-      return `${user.firstname} ${user.lastname}`;
-    }
-    return user.firstname;
-  }
-  if (user.lastname) {
-    return user.lastname;
-  }
-  return user.email;
 }

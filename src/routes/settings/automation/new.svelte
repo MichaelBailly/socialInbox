@@ -78,8 +78,7 @@ const onActionValue = (event) => {
   const { value, processor } = event.detail;
   let newActions = [...actions];
   let isValueFilled = Array.isArray(value) ? !!value.length : !!value;
-  newActions[event.detail.id] = { value, processor, isFilled: !!(isValueFilled && processor)  };
-  console.log(newActions);
+  newActions[event.detail.id] = { value, processor, isFilled: !!(isValueFilled && processor) };
   newActionPossible = actions.some(a => a.isFilled === false) ? true : false;
   actions = newActions;
 }

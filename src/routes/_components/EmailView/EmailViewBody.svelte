@@ -2,7 +2,6 @@
 export let email;
 
 let body = '';
-console.log('emailview body', email);
 $: {
   if (!email || !email.email) {
     body = '';

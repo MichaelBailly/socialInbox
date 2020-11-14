@@ -38,7 +38,7 @@ export async function store(user, email) {
       },
     };
 
-    console.log('about to record', emailDocument);
+    debug('about to record %O', emailDocument);
 
     await collection.insertOne(emailDocument);
   } else {

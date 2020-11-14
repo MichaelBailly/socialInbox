@@ -55,6 +55,7 @@ export async function get(req, res) {
 
   const database = await db();
   const collection = database.collection('chatMessages');
+  const userDataCollection = database.collection('chatMessagesUserData');
 
   try {
     const messages = await collection
@@ -62,7 +63,11 @@ export async function get(req, res) {
       .sort({ _id: -1 })
       .limit(50)
       .toArray();
-    return res.status(200).json(messages);
+    const trackDoc = await userDataCollection.findOne({
+      userId: currentUser._id,
+      emailId,
+    });
+    return res.status(200).json({ messages, userData: trackDoc || {} });
   } catch (e) {
     return res.status(500).json({ error: e.message, stack: e.stack });
   }

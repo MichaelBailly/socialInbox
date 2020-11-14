@@ -17,7 +17,6 @@ let automation;
 
 onMount(async () => {
   automation = await get(`/api/automations/${automationId}`);
-  console.log('set automation to', automation);
 });
 </script>
 

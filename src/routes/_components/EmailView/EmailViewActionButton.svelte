@@ -8,7 +8,6 @@ import { put } from 'api';
 let menuOpened = false;
 
 const updateLabels = async (labelIds) => {
-  console.log('should set', labelIds);
   closeModal()();
   menuOpened = false;
   await put(`/api/emails/${email._id}/labels`, { labelIds });
