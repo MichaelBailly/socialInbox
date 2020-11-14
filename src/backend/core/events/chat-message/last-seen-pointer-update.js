@@ -40,14 +40,17 @@ export async function chatMessageLastSeenPointerUpdateReceived(kafkaMessage) {
       { $set: documentContents }
     );
   } else {
-    response = await collection.insertOne(documentContents);
+    response = await collection.insertOne({
+      ...documentSelector,
+      ...documentContents,
+    });
   }
 
   debug('update last seen pointer upsert: %O', response.result);
 
   const notificationMessage = KafkaMessage.fromObject(kafkaMessage.key, {
     sender: kafkaMessage.sender(),
-    event: 'events:chat-message:last-seen-pointer:updated',
+    event: 'chat-message:last-seen-pointer:updated',
     payload: { ...kafkaMessage.payload(), ts },
   });
 
@@ -56,5 +59,5 @@ export async function chatMessageLastSeenPointerUpdateReceived(kafkaMessage) {
 }
 
 export const EVENTS = {
-  'events:chat-message:last-seen-pointer:update': chatMessageLastSeenPointerUpdateReceived,
+  'chat-message:last-seen-pointer:update': chatMessageLastSeenPointerUpdateReceived,
 };

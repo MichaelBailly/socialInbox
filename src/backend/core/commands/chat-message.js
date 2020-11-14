@@ -22,7 +22,7 @@ export function addChatMessage(chatMessage) {
 export async function setUserLastSeenMessageId(user, emailId, messageId) {
   const id = new ObjectId(messageId);
   const message = {
-    event: 'events:chat-message:last-seen-pointer:update',
+    event: 'chat-message:last-seen-pointer:update',
     sender: Actor.fromUser(user),
     payload: {
       messageId: id,

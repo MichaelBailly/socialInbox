@@ -67,7 +67,7 @@ export async function get(req, res) {
     } else if (kafkaMessage.event() === 'email:delivered') {
       emailDeliveredEvent(kafkaMessage, eventCallbackArgs);
     } else if (
-      kafkaMessage.event() === 'events:chat-message:last-seen-pointer:updated'
+      kafkaMessage.event() === 'chat-message:last-seen-pointer:updated'
     ) {
       ChatMessageLastSeenPointerUpdatedEvent(kafkaMessage, eventCallbackArgs);
     }

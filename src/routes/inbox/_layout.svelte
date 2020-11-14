@@ -7,12 +7,7 @@
 </script>
 
 <script>
-export let segment;
-
 import Modal from '../../components/Modal.svelte';
-import { fetchEmails } from '../../libs/emails/emailProvider';
-
-console.log(segment);
 </script>
 
 <svelte:head>
@@ -23,9 +18,6 @@ console.log(segment);
 	Email menu
 </div>
 
-{#await fetchEmails()}
-  Loading...
-{:then foo}
 <div class="columns p-0 m-0">
 
 	<div class="column menu-column">
@@ -42,9 +34,6 @@ console.log(segment);
   </div>
   <slot>In layout</slot>
 </div>
-{:catch err}
-<div>Error: {err.message}</div>
-{/await}
 <Modal />
 
 <style lang='less'>

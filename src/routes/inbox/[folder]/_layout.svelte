@@ -13,6 +13,7 @@
 	import { connect } from '../../../libs/sse';
 	import { emails, myEmails, sharedEmails, fetchEmails, isLoading } from '../../../libs/emails/emailProvider';
 	import EmailListItem from '../../_components/EmailListItem.svelte';
+	import { chatStates } from '../../../libs/chat/chatProvider';
 
   let emailsList = emails;
 
@@ -30,8 +31,9 @@
   $: baseHref = `/inbox/${folder}`;
 
 	const getEmails = async () => {
-		fetchEmails();
-		console.log(emails);
+		return fetchEmails().then(emails => {
+			console.log(emails);
+		});
 	}
 
 	onMount(connect);
@@ -43,8 +45,10 @@
 	<title>All mails - SoBox</title>
 </svelte:head>
 
-
-<div class="column list-column">
+{#await getEmails()}
+Loading your mailbox...
+{:then foo}
+	<div class="column list-column">
     {#each $emailsList as email (email._id)}
     <EmailListItem email="{email}" {baseHref}></EmailListItem>
     {:else}
@@ -54,6 +58,7 @@
 <div class="column content-column p-0">
   <slot></slot>
 </div>
+{/await}
 
 
 <style lang='less'>

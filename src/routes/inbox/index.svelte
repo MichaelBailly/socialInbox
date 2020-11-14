@@ -4,6 +4,4 @@ export function preload() {
 }
 </script>
 
-<script></script>
-
-<div></div>
+<div />

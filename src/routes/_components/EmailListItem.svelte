@@ -4,12 +4,14 @@ import EmailRecipientDisplay from './EmailRecipientDisplay.svelte';
 import ListItemAvatar from './ListItemAvatar.svelte';
 import EmailListItemDate from './EmailListItemDate.svelte';
 import Label from './Labels/Label.svelte';
+import { chatStates } from '../../libs/chat/chatProvider';
 
 export let email;
 export let baseHref;
 
 $: from = email.email.from[0] ||'unknown';
 $: subject = email.email.subject ||'No subject';
+$: chatState = $chatStates[email._id] ||{};
 
 const onClick = () => {
   goto(`${baseHref}/${email._id}`);
@@ -25,12 +27,24 @@ const onClick = () => {
       </div>
       <div class="subject is-size-6 has-text-weight-bold">{subject}</div>
       <div class="body-preview is-size-7">{email.email.preview || ''}</div>
-      <div>
-        {#each email.labels as label}
-          <span class="pr-2">
-            <Label {label} />
-          </span>
-        {/each}
+      <div class="collaborative-container">
+        <div class="labels">
+          {#each email.labels as label}
+            <span class="pr-2">
+              <Label {label} />
+            </span>
+          {/each}
+        </div>
+        <div class="chat-status is-size-7 {chatState.unreadCount ? 'has-text-primary' : ''}">
+          {#if chatState.total}
+            {#if chatState.unreadCount}
+              {chatState.unreadCount}
+            {/if}
+            <span class="icon">
+              <i class="fas fa-comments"></i>
+            </span>
+          {/if}
+        </div>
       </div>
     </div>
 </div>
@@ -74,6 +88,15 @@ const onClick = () => {
 .subject {
   overflow-x: hidden;
   text-overflow: ellipsis;
+}
+
+.collaborative-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.labels {
+  flex-grow: 1;
 }
 
 </style>
