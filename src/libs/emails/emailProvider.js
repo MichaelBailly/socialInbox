@@ -119,3 +119,19 @@ registerEvent('email:label:removed', async (payload) => {
 registerEvent('email:delivered', async (payload) => {
   insertEmail(payload.email);
 });
+
+registerEvent('email:task:created', async (payload) => {
+  emails.update((list) => {
+    const newList = list.map((email) => {
+      if (payload.emailId === email._id) {
+        const newMail = { ...email };
+        newMail.tasks.push(payload.task);
+        newMail.activity.push(payload);
+        return newMail;
+      }
+      return email;
+    });
+
+    return newList;
+  });
+});

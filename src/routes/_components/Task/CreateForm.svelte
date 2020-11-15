@@ -1,10 +1,12 @@
 <script>
 export let email;
 export let onCreate;
+export let onCancel;
 
 import Select from 'svelte-select';
 import  { user, getDisplayName } from '../../../libs/users';
 import { get } from 'api';
+import { add, format } from 'date-fns';
 
 export let selectedUser = { ...$user };
 export let deadlineCount = 2;
@@ -30,26 +32,52 @@ const loadOptions = async (q) => {
     u.dn = getDisplayName(u);
     return u;
   });
-  console.log(result);
   return result;
 };
 // ---------------------------------------------
 
-$: canBeRecorded = selectedUser && selectedUser._id && description && description.length;
+let deadlineDateString;
+
+$: deadlineDate = add(new Date(), {
+    weeks: deadlineScale === 'week' && deadlineCount || 0,
+    days: deadlineScale === 'day' && deadlineCount || 0,
+    hours: deadlineScale === 'hour' && deadlineCount || 0,
+  });
+$: deadlineDateString = format(deadlineDate, 'PPPP \'at\' HH\'h\'');
+
+$: selectedValue && console.log(selectedValue);
+
+$: canBeRecorded = selectedValue && selectedValue._id && description && description.length;
+
+const create = () => {
+  if (!canBeRecorded) {
+    return;
+  }
+
+  return onCreate({
+    assignee: selectedValue,
+    deadline: {
+      date: deadlineDate,
+      count: deadlineCount,
+      scale: deadlineScale,
+    },
+    description,
+  });
+}
 
 </script>
 
 <article class="message is-warning">
   <div class="message-header">
     <p>Add Task</p>
-    <button class="delete" aria-label="delete"></button>
+    <button class="delete" aria-label="delete" on:click={onCancel}></button>
   </div>
   <div class="message-body">
     <div class="field is-horizontal">
       <div class="field-label is-normal">
         <!-- svelte-ignore a11y-label-has-associated-control -->
         <label class="label">
-          Owner
+          Assignee
         </label>
       </div>
       <div class="field-body">
@@ -75,7 +103,7 @@ $: canBeRecorded = selectedUser && selectedUser._id && description && descriptio
           </div>
           <div class="control is-narrow">
             <div class="select">
-              <select class="select" selected={deadlineScale}>
+              <select class="select" bind:value={deadlineScale}>
                 <option value="hour">hours(s)</option>
                 <option value="day">day(s)</option>
                 <option value="week">week(s)</option>
@@ -88,6 +116,7 @@ $: canBeRecorded = selectedUser && selectedUser._id && description && descriptio
         </div>
       </div>
     </div>
+    <p class="help pb-2">Deadline set to {deadlineDateString}</p>
     <div class="field">
       <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="label">Task</label>
@@ -97,10 +126,10 @@ $: canBeRecorded = selectedUser && selectedUser._id && description && descriptio
     </div>
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-link" disabled={!canBeRecorded}>Save</button>
+        <button class="button is-link" disabled={!canBeRecorded} on:click={create}>Save</button>
       </div>
       <div class="control">
-        <button class="button is-link is-light">Cancel</button>
+        <button class="button is-link is-light" on:click={onCancel}>Cancel</button>
       </div>
     </div>
   </div>
@@ -109,5 +138,9 @@ $: canBeRecorded = selectedUser && selectedUser._id && description && descriptio
 <style>
 .deadline-days {
   width: 5rem;
+}
+
+.is-expanded {
+  width: 100%;
 }
 </style>

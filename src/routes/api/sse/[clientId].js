@@ -70,6 +70,8 @@ export async function get(req, res) {
       kafkaMessage.event() === 'chat-message:last-seen-pointer:updated'
     ) {
       ChatMessageLastSeenPointerUpdatedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'email:task:created') {
+      taskCreatedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -131,3 +133,4 @@ const emailLabelAddedEvent = sendIfUserIsInEmail;
 const emailLabelRemovedEvent = sendIfUserIsInEmail;
 const automationCreatedEvent = sendToAll;
 const ChatMessageLastSeenPointerUpdatedEvent = sendOnlyToSender;
+const taskCreatedEvent = sendIfUserIsInEmail;

@@ -3,7 +3,7 @@ export let automation = {
   name: '',
   description: '',
   trigger: {},
-  actions: [],
+  actions: [{value: '', processor: '', isFilled: false }],
 };
 
 import { goto } from '@sapper/app';

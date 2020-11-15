@@ -31,6 +31,7 @@ export async function store(user, email) {
       usersShared: [],
       activity: [],
       labels: [],
+      tasks: [],
       email: sanitizedEmail,
       lastModified: sanitizedEmail.receivedAt,
       userState: {

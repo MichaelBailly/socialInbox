@@ -17,7 +17,7 @@ export async function fetchNewestEmails(
     limit
   );
   console.log(body);
-  C;
+
   const response = await fetch(jmapUrl, {
     method: 'POST',
     headers: {

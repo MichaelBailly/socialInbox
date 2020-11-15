@@ -116,11 +116,12 @@ const onClick = () => {
   background-color: rgba(250,250,250,0.85);
   transform: scaleY(0);
   transform-origin: bottom;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease 0.2s;
 }
 
 .mail-item:hover .actions {
   transform: scaleY(1);
+  transition: transform 0.2s ease 1s;
 }
 
 </style>

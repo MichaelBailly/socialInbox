@@ -5,6 +5,10 @@ import LabelSelectField from '../../../../_components/Labels/LabelSelectField.sv
 const dispatch = createEventDispatcher();
 export let value = [];
 
+if (!value) {
+  value = [];
+}
+
 let labelStr = '';
 let labelIds = value.map(l => l._id);
 
