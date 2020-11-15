@@ -192,6 +192,8 @@ export default class JmapSynchronizer {
       new Date(),
       CONSTANTS.JMAP.INITIAL_SYNC_PERIOD
     );
+
+    const initialSyncStartDateString = initialSyncStartDate.toISOString();
     let position = 0;
     const limit = CONSTANTS.JMAP.SYNC_EMAILS_PER_REQUESTS;
     let endLoop = false;
@@ -206,6 +208,7 @@ export default class JmapSynchronizer {
         this.token,
         accountId,
         mailboxId,
+        initialSyncStartDateString,
         position,
         limit
       );

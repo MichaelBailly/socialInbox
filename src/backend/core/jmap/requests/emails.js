@@ -16,6 +16,8 @@ export async function fetchNewestEmails(
     position,
     limit
   );
+  console.log(body);
+  C;
   const response = await fetch(jmapUrl, {
     method: 'POST',
     headers: {
@@ -36,9 +38,20 @@ export async function fetchEmails(
   token,
   accountId,
   mailboxId,
+  date,
   position = 0,
   limit = 20
 ) {
+  const body = getRequestBodyForNewest(
+    accountId,
+    mailboxId,
+    date,
+    position,
+    limit
+  );
+
+  console.log(body);
+
   const response = await fetch(jmapUrl, {
     method: 'POST',
     headers: {
@@ -46,7 +59,7 @@ export async function fetchEmails(
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: getRequestBody(accountId, mailboxId, position, limit),
+    body,
   });
   const jmapResponse = await response.json();
   const emails = jmapResponse.methodResponses[1][1].list;
