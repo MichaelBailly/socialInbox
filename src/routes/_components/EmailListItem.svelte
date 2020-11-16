@@ -55,7 +55,7 @@ const onClick = () => {
 
 <style>
 
-.mail-item, .contents, .body-preview {
+.body-preview {
   flex-grow: 1;
 }
 .mail-item {

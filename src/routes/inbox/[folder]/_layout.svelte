@@ -10,11 +10,8 @@
 	export let segment;
   export let folder;
 
-  import { onMount } from 'svelte';
-	import { connect } from '../../../libs/sse';
 	import { emails, myEmails, sharedEmails, fetchEmails, isLoading } from '../../../libs/emails/emailProvider';
 	import EmailListItem from '../../_components/EmailListItem.svelte';
-	import { chatStates } from '../../../libs/chat/chatProvider';
 
   let emailsList = emails;
 
@@ -36,9 +33,7 @@
 			console.log(emails);
 		});
 	}
-
-	onMount(connect);
-
+	
 	getEmails();
 </script>
 

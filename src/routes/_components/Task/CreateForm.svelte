@@ -5,7 +5,7 @@ export let onCancel;
 
 import Select from 'svelte-select';
 import  { user, getDisplayName } from '../../../libs/users';
-import { get } from 'api';
+import { get, post } from 'api';
 import { add, format } from 'date-fns';
 
 export let selectedUser = { ...$user };
@@ -49,12 +49,12 @@ $: selectedValue && console.log(selectedValue);
 
 $: canBeRecorded = selectedValue && selectedValue._id && description && description.length;
 
-const create = () => {
+const create = async () => {
   if (!canBeRecorded) {
     return;
   }
 
-  return onCreate({
+  await createTask({
     assignee: selectedValue,
     deadline: {
       date: deadlineDate,
@@ -63,7 +63,19 @@ const create = () => {
     },
     description,
   });
+
+  return onCreate();
 }
+
+const createTask = async (task) => {
+  let id;
+  try {
+    const response = await post(`/api/tasks/${email._id}`, task);
+    id = response._id;
+  } catch(e) {
+    console.log('Unable to create task', e);
+  }
+};
 
 </script>
 

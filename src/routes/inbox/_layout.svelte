@@ -7,7 +7,18 @@
 </script>
 
 <script>
+import { onMount } from 'svelte';
 import Modal from '../../components/Modal.svelte';
+import { labels, loadLabels } from '../../libs/labels/labelProvider';
+import Label from '../_components/Labels/Label.svelte';
+import { connect } from '../../libs/sse';
+
+onMount(() => {
+	console.log('/inbox: connecting to SSE');
+	connect();
+	console.log('/inbox: loading labels');
+	loadLabels();
+});
 </script>
 
 <svelte:head>
@@ -30,6 +41,20 @@ import Modal from '../../components/Modal.svelte';
 				<li><a href="/inbox/my">My emails</a></li>
 				<li><a href="/inbox/shared">Shared with me</a></li>
 			</ul>
+			<p class="menu-label">
+				Labels
+			</p>
+			{#if $labels.length}
+				<ul class="menu-list">
+					{#each $labels as label}				
+						<li><a href="/inbox/labels/{label.name}"><Label {label} /></a></li>
+					{/each}
+				</ul>
+			{:else}
+				<ul class="menu-list">
+					<li>No label yet</li>
+				</ul>
+			{/if}
 		</aside>
   </div>
   <slot>In layout</slot>

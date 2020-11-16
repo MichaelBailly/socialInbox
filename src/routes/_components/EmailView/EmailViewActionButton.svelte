@@ -3,6 +3,7 @@ export let email;
 
 import { openModal, closeModal } from '../../../libs/modal/modalService';
 import LabelSelect from '../../_components/Labels/LabelSelect.svelte';
+import TaskCreateForm  from '../Task/CreateForm.svelte';
 import { put } from 'api';
 
 let menuOpened = false;
@@ -13,7 +14,7 @@ const updateLabels = async (labelIds) => {
   await put(`/api/emails/${email._id}/labels`, { labelIds });
 }
 
-const openDialog = () => {
+const openLabelDialog = () => {
   const emailLabelIds = (email.labels || []).map(l => l._id);
 
   openModal()(LabelSelect, {
@@ -24,6 +25,19 @@ const openDialog = () => {
     closeButton: false
   });
 }
+
+const openTaskDialog = () => {
+  menuOpened = false;
+
+  openModal()(TaskCreateForm, {
+    email,
+    onCreate: closeModal(),
+    onCancel: closeModal(),
+  },{
+    closeButton: false
+  });
+}
+
 </script>
 
 <div class="dropdown is-right" class:is-active={menuOpened}>
@@ -36,7 +50,10 @@ const openDialog = () => {
   </div>
   <div class="dropdown-menu" id="dropdown-menu" role="menu">
     <div class="dropdown-content">
-        <a class="dropdown-item" on:click="{openDialog}">Set/unset labels</a>
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <a class="dropdown-item" on:click="{openLabelDialog}">Set/unset labels</a>
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <a class="dropdown-item" on:click="{openTaskDialog}">Add task</a>
     </div>
   </div>
 </div>

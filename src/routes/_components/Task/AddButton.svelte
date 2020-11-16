@@ -3,23 +3,14 @@ export let email;
 
 import { openModal, closeModal } from '../../../libs/modal/modalService';
 import TaskCreateForm from './CreateForm.svelte';
-import { post } from 'api';
 
-const add = async (task) => {
-  let id;
-  try {
-    const response = await post(`/api/tasks/${email._id}`, task);
-    id = response._id;
-    closeModal()();
-  } catch(e) {
-    console.log('Unable to create task', e);
-  }
-
+const onTaskCreated = async (task) => {
+  closeModal()();
 };
 
 const openDialog = () => {
   openModal()(TaskCreateForm, {
-    onCreate: add,
+    onCreate: onTaskCreated,
     onCancel: closeDialog,
     email,
   },{

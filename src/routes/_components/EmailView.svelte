@@ -1,11 +1,14 @@
 <script>
-import EmailRecipientDisplay from "./EmailRecipientDisplay.svelte";
+import { openModal, closeModal } from '../../libs/modal/modalService';
 import EmailListItemDate from "./EmailListItemDate.svelte";
 import EmailViewBody from "./EmailView/EmailViewBody.svelte";
 import EmailViewShare from "./EmailView/EmailViewShare.svelte";
 import EmailViewActionButton from './EmailView/EmailViewActionButton.svelte';
 import Label from './Labels/Label.svelte';
 import UserInline from './User/Inline.svelte';
+import TaskFloatingActionMenu from './Task/FloatingActionMenu.svelte';
+import TaskCreateForm from './Task/CreateForm.svelte';
+
 
 export let email;
 
@@ -14,6 +17,36 @@ $: from = email.email.from[0] ||'unknown';
 $: to = email.email.to || [];
 $: cc = email.email.cc || [];
 $: recipients = to.concat(cc);
+
+let floatingMenu = false;
+let taskMenuCoords = [0, 0];
+let selectedText = '';
+
+const onSelection = (event) => {
+  selectedText = window.getSelection ? window.getSelection().toString() : '';
+  console.log('selection', selectedText, event);
+  if (selectedText) {
+    console.log('setting menu visible to true');
+    floatingMenu = true;
+    taskMenuCoords = [event.offsetX, event.offsetY];
+  }
+};
+
+const onCloseMenu = (text) => {
+  console.log('closing menu');
+  floatingMenu = false;
+  if (text) {
+    openModal()(TaskCreateForm, {
+    email,
+    description: text,
+    onCreate: closeModal(),
+    onCancel: closeModal(),
+  },{
+    closeButton: false
+  });
+  }
+}
+
 
 </script>
 
@@ -61,7 +94,11 @@ $: recipients = to.concat(cc);
     {/if}
   </div>
   <hr class="" />
-  <div class="block email-body">
+  <div class="block email-body content" on:mouseup={onSelection}>
+    {#if floatingMenu}
+      <TaskFloatingActionMenu coords={taskMenuCoords} closeMenu={onCloseMenu} {selectedText} />      
+    {/if}
+
     <EmailViewBody email="{email}" />
   </div>
 </div>
@@ -75,9 +112,9 @@ $: recipients = to.concat(cc);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+  }
 
-    h2 {
-      flex-grow: 1;
-    }
+  .email-body {
+    position: relative;
   }
 </style>

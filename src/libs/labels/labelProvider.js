@@ -14,5 +14,8 @@ export async function loadLabels() {
 }
 
 registerEvent('label:created', (payload) => {
-  labels.update((list) => [...list, payload.label]);
+  labels.update((list) => {
+    const newList = [...list, payload.label];
+    newList.sort((a, b) => a.name < b.name ? -1 : 1)
+  });
 });

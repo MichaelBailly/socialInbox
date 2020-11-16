@@ -6,6 +6,10 @@ import ActivityTemplate from './ActivityTemplate.svelte';
 import UserInline from '../../../_components/User/Inline.svelte';
 import { format } from 'date-fns';
 
+let description = activity.task.description.substr(0, 35);
+if (activity.task.description.length > description.length) {
+  description += '...';
+}
 $: actor = activity.actor._id === $user._id;
 $: assignee = activity.target._id === $user._id;
 $: actorIsAssignee = activity.actor._id === activity.target._id;
@@ -18,7 +22,7 @@ $: deadline = format(new Date(activity.task.deadline.date), 'PPPP \'at\' HH\'h\'
 {:else}
   <UserInline user={activity.actor} />
 {/if}
-created a task to complete on {deadline}
+created a task <strong>"{description}"</strong> to complete on {deadline}
 {#if !actorIsAssignee}
   {#if assignee}
     by you.
