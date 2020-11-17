@@ -1,7 +1,7 @@
 <script>
 export let email;
 
-import { afterUpdate, beforeUpdate, onMount } from 'svelte';
+import { afterUpdate, beforeUpdate, onMount, tick } from 'svelte';
 
 import { writable } from 'svelte/store';
 import { getChat, chatStates } from '../../../libs/chat/chatProvider';
@@ -80,13 +80,17 @@ beforeUpdate(async () => {
 });
 
 afterUpdate(() => {
+  if (autoscroll.lastEmailId !== email._id) {
+    scrollArea.scrollTo(0, 0);
+  }
   if (autoscroll.lastEmailId === email._id && autoscroll.on) {
     scrollArea.scrollTo(0, scrollArea.scrollHeight);
   }
   autoscroll.lastEmailId = email._id;
 });
 
-onMount(() => {
+onMount(async () => {
+
   const options = {
     root: scrollArea,
     rootMargin: '0px',
@@ -94,7 +98,9 @@ onMount(() => {
   }
 
   scrollAreaObserver = new IntersectionObserver(scrollAreaCallback, options);
-})
+
+  scrollArea.scrollTo(0, 0);
+});
 </script>
 <div class="workspace has-background-light">
   <div class="scrollable px-6 my-2"  bind:this={scrollArea}>

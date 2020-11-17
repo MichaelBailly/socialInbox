@@ -45,8 +45,6 @@ $: deadlineDate = add(new Date(), {
   });
 $: deadlineDateString = format(deadlineDate, 'PPPP \'at\' HH\'h\'');
 
-$: selectedValue && console.log(selectedValue);
-
 $: canBeRecorded = selectedValue && selectedValue._id && description && description.length;
 
 const create = async () => {

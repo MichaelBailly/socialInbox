@@ -6,21 +6,18 @@ import sendNotification from '../../../kafka/notifications/producer';
 import Actor from '../../../../shared/actor';
 
 const NOTIFICATION_NAME = 'email:delivered';
+const UPDATE_NOTIFICATION_NAME = 'email:user:added';
 const debug = logger.extend('events:email:helpers');
+
+export const STORE_KIND_CREATE = 'create';
+export const STORE_KIND_UPDATE = 'update';
 
 export async function store(user, email) {
   const collection = await dbCol('emails');
 
-  const dbEmail = await collection.findOne({ _id: email.id });
-
   // 1/ try to find email. Email can already be in db if someone else received it
   // email exists. Let's see if the current user is in
-  if (dbEmail) {
-    if (dbEmail.users.includes(user._id)) {
-      // user is already in, nothing more to do
-      return false;
-    }
-  }
+  const dbEmail = await findExistingEmail(email);
 
   if (!dbEmail) {
     const sanitizedEmail = sanitizeEmailToMongodb(email);
@@ -42,27 +39,64 @@ export async function store(user, email) {
     debug('about to record %O', emailDocument);
 
     await collection.insertOne(emailDocument);
-  } else {
-    // add user in the users array, and userState
-    const sanitizedEmail = sanitizeEmailToMongodb(email);
-    const localUserState = userState(sanitizedEmail);
-    await collection.updateOne(
-      { _id: email.id },
-      {
-        $push: { users: user._id },
-        $set: { [`userState.${user._id}`]: localUserState },
-      }
-    );
+    return [STORE_KIND_CREATE, emailDocument];
   }
-  return true;
+
+  // Email already exist in datastore
+  if (dbEmail.users.includes(user._id)) {
+    // user is already in, nothing more to do
+    return [false, null];
+  }
+
+  // add user in the users array, and userState
+  const sanitizedEmail = sanitizeEmailToMongodb(email);
+  const localUserState = userState(sanitizedEmail);
+
+  debug('about to update existing email with a new user. %O', dbEmail);
+
+  await collection.updateOne(
+    { _id: dbEmail._id },
+    {
+      $push: { users: user._id },
+      $set: { [`userState.${user._id}`]: localUserState },
+    }
+  );
+
+  const e = await collection.findOne({ _id: dbEmail._id });
+
+   return [STORE_KIND_UPDATE, e];
 }
 
-export function deliveredNotification(jmapEmail, user, initialSync = false) {
+export function deliveredNotification(email, user, initialSync = false) {
   return {
     actor: user,
-    emailId: jmapEmail.id, // this is JMAP email still
+    emailId: email._id,
     initialSync,
   };
+}
+
+export function emailUpdatedNotification(email, user) {
+  return {
+    actor: Actor.fromUser(user),
+    emailId: email._id,
+  };
+}
+
+export async function sendEmailUpdatedNotification(user, payload) {
+  const kafkaMessage = KafkaMessage.fromObject(user._id, {
+    sender: Actor.fromUser(user),
+    event: UPDATE_NOTIFICATION_NAME,
+    payload,
+  });
+  try {
+    sendNotification(kafkaMessage);
+    debug(
+      `Sent notification ${UPDATE_NOTIFICATION_NAME} for user "${user.email}" email "%s"`,
+      payload._id
+    );
+  } catch (e) {
+    debug(`Unable to post ${UPDATE_NOTIFICATION_NAME} notification to Kafka: %O`, e);
+  }
 }
 
 export function sanitizeEmailToMongodb(email) {
@@ -109,4 +143,10 @@ export async function sendEmailNotification(user, payload) {
   } catch (e) {
     debug(`Unable to post ${NOTIFICATION_NAME} notification to Kafka: %O`, e);
   }
+}
+
+async function findExistingEmail(email) {
+  const collection = await dbCol('emails');
+  const existingEmail = await collection.findOne({ 'email.messageId': { $all: email.messageId } });
+  return existingEmail;
 }

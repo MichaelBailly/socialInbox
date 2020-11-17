@@ -16,10 +16,7 @@ import EmailListItem from '../../../_components/EmailListItem.svelte';
 const baseHref = `/inbox/labels/${encodeURIComponent(labelName)}`;
 
 let emailList = [];
-$: {
-  console.log('in labelname _layout', labelName);
-  emailList = $emails.filter(e => e.labels.some((l => l.name === labelName)));
-};
+$: emailList = $emails.filter(e => e.labels.some((l => l.name === labelName)));
 
 </script>
 

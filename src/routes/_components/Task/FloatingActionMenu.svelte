@@ -18,7 +18,6 @@ const handleClickOutside = (event) => {
     return;
   }
   if (menu && !menu.contains(event.target) && !event.defaultPrevented) {
-    console.log('calling closeMenu()', menu, event.target);
     closeMenu();
   }
 }

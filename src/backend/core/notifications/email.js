@@ -3,7 +3,7 @@ import { applyAutomations } from '../automation';
 const debug = logger.extend('notifications:email:sync');
 
 const onEmailDelivered = async ({ kafkaMessage }) => {
-  debug('############# Got message %s', kafkaMessage.event());
+  debug('Got message %s', kafkaMessage.event());
   await applyAutomations(kafkaMessage);
 };
 

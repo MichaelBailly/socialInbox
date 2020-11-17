@@ -20,6 +20,10 @@ module.exports = {
         functions: 'never',
       },
     ],
-    'space-before-function-paren': ['error', 'never'],
+    'space-before-function-paren': ['error', {
+      anonymous: 'never',
+      named: 'never',
+      asyncArrow: 'always',
+    }],
   },
 };

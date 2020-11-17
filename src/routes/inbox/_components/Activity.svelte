@@ -16,8 +16,6 @@ const compMap = {
   'email:task:created': WorkSpaceActivityEmailTaskCreated,
 };
 
-
-
 </script>
 
 <svelte:component this="{compMap[item.name]}" {email} activity="{item}" />

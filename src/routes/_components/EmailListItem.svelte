@@ -5,7 +5,6 @@ import ListItemAvatar from './ListItemAvatar.svelte';
 import EmailListItemDate from './EmailListItemDate.svelte';
 import Label from './Labels/Label.svelte';
 import { chatStates } from '../../libs/chat/chatProvider';
-import TaskAddButtom from './Task/AddButton.svelte';
 
 export let email;
 export let baseHref;
@@ -14,12 +13,13 @@ export let selected;
 $: from = email.email.from[0] ||'unknown';
 $: subject = email.email.subject ||'No subject';
 $: chatState = $chatStates[email._id] ||{};
+$: activeTasks = email.tasks.filter(task => new Date(task.deadline.date).getTime() > new Date().getTime()).length;
 
 const onClick = () => {
   goto(`${baseHref}/${email._id}`);
 };
 </script>
-<div class="columns mail-item px-2 py-2" on:click={onClick} class:selected={selected}>
+<div class="columns mail-item px-2 py-2" on:click={onClick} class:selected={selected} tabindex="0" on:focus={onClick}>
   <div class="avatar pr-2"><ListItemAvatar resource="{from}" size="64"></ListItemAvatar></div>
   <div class="contents">
     <div class="head">
@@ -36,20 +36,26 @@ const onClick = () => {
           </span>
         {/each}
       </div>
-      <div class="chat-status is-size-7 {chatState.unreadCount ? 'has-text-primary' : ''}">
-        {#if chatState.total}
-          {#if chatState.unreadCount}
-            {chatState.unreadCount}
-          {/if}
-          <span class="icon">
-            <i class="fas fa-comments"></i>
-          </span>
+      <div class="status-icons">
+        {#if email.tasks.length}
+          <span class="task-status is-size-7 {activeTasks ? 'has-text-warning' : ''}">
+            <span class="icon" title="{activeTasks}/{email.tasks.length} active tasks">
+              <i class="fas fa-tasks"></i>
+            </span>
+          </span>  
         {/if}
+        <span class="chat-status is-size-7 {chatState.unreadCount ? 'has-text-primary' : ''}">
+          {#if chatState.total}
+            {#if chatState.unreadCount}
+              {chatState.unreadCount}
+            {/if}
+            <span class="icon">
+              <i class="fas fa-comments"></i>
+            </span>
+          {/if}
+          </span>
       </div>
     </div>
-  </div>
-  <div class="actions p-2 has-text-right">
-    <TaskAddButtom {email} />
   </div>
 </div>
 
@@ -107,21 +113,4 @@ const onClick = () => {
 .labels {
   flex-grow: 1;
 }
-
-.actions {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(250,250,250,0.85);
-  transform: scaleY(0);
-  transform-origin: bottom;
-  transition: transform 0.2s ease 0.2s;
-}
-
-.mail-item:hover .actions {
-  transform: scaleY(1);
-  transition: transform 0.2s ease 1s;
-}
-
 </style>

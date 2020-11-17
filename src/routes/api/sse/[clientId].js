@@ -72,6 +72,8 @@ export async function get(req, res) {
       ChatMessageLastSeenPointerUpdatedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'email:task:created') {
       taskCreatedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'email:user:added') {
+      emailUserAddedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -98,7 +100,9 @@ const sendToAll = async (kafkaMessage, { send }) => {
 };
 
 const sendIfUserIsInEmail = async (kafkaMessage, { user, send, debug }) => {
+  debug('sendIfUSerIsInEmail');
   const payload = kafkaMessage.payload();
+  debug('payload: %O', payload);
   const email = await getEmailIfAllowed(user, payload.emailId);
   if (!email) {
     debug('email not found or user not in email users/usersShared');
@@ -134,3 +138,4 @@ const emailLabelRemovedEvent = sendIfUserIsInEmail;
 const automationCreatedEvent = sendToAll;
 const ChatMessageLastSeenPointerUpdatedEvent = sendOnlyToSender;
 const taskCreatedEvent = sendIfUserIsInEmail;
+const emailUserAddedEvent = sendIfUserIsInEmail;

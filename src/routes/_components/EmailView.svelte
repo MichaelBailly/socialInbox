@@ -24,16 +24,13 @@ let selectedText = '';
 
 const onSelection = (event) => {
   selectedText = window.getSelection ? window.getSelection().toString() : '';
-  console.log('selection', selectedText, event);
   if (selectedText) {
-    console.log('setting menu visible to true');
     floatingMenu = true;
     taskMenuCoords = [event.offsetX, event.offsetY];
   }
 };
 
 const onCloseMenu = (text) => {
-  console.log('closing menu');
   floatingMenu = false;
   if (text) {
     openModal()(TaskCreateForm, {

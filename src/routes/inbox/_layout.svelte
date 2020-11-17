@@ -55,6 +55,12 @@ onMount(() => {
 					<li>No label yet</li>
 				</ul>
 			{/if}
+			<p class="menu-label">
+				Tasks
+			</p>
+			<ul class="menu-list">
+				<li><a href="/inbox/all">My tasks</a></li>
+			</ul>
 		</aside>
   </div>
   <slot>In layout</slot>

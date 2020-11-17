@@ -29,11 +29,9 @@
   $: baseHref = `/inbox/${folder}`;
 
 	const getEmails = async () => {
-		return fetchEmails().then(emails => {
-			console.log(emails);
-		});
+		return fetchEmails();
 	}
-	
+
 	getEmails();
 </script>
 
@@ -44,11 +42,11 @@
 {#await getEmails()}
 Loading your mailbox...
 {:then foo}
-	<div class="column list-column">
-    {#each $emailsList as email (email._id)}
-    <EmailListItem email="{email}" {baseHref} selected={email._id === segment}></EmailListItem>
+	<div class="column list-column" tabindex="-1">
+    {#each $emailsList as email, index (email._id)}
+    <EmailListItem email="{email}" {baseHref} selected={email._id === segment} tabindex="{index}"></EmailListItem>
     {:else}
-    Nothing to display
+    Nothing to display !
     {/each}
 </div>
 <div class="column content-column p-0">
@@ -69,6 +67,7 @@ Loading your mailbox...
 	flex: 1 1 auto;
   overflow-y: auto;
 }
+
 .content-column {
 	overflow: auto;
 	display: flex;

@@ -21,7 +21,7 @@ export default {
     SESSION: 'https://dev.open-paas.org/jmap/session',
     JMAP: 'https://dev.open-paas.org/jmap',
     SYNC_EMAILS_PER_REQUESTS: 30,
-    PERIODIC_SYNC_INTERVAL: 600000, // ms
+    PERIODIC_SYNC_INTERVAL: 40000, // ms
     INITIAL_SYNC_PERIOD: { weeks: 1 }, // https://date-fns.org/v2.16.1/docs/sub duration
   },
 };

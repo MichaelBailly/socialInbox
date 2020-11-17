@@ -16,7 +16,7 @@ export async function fetchNewestEmails(
     position,
     limit
   );
-  console.log(body);
+//  console.log(body);
 
   const response = await fetch(jmapUrl, {
     method: 'POST',
@@ -50,7 +50,7 @@ export async function fetchEmails(
     limit
   );
 
-  console.log(body);
+ // console.log(body);
 
   const response = await fetch(jmapUrl, {
     method: 'POST',

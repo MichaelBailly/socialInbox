@@ -90,6 +90,7 @@ registerEvent('email:label:added', async (payload) => {
       if (payload.emailId === email._id) {
         const newMail = { ...email };
         newMail.labels.push(payload.label);
+        newMail.activity.push(payload);
         return newMail;
       }
       return email;
@@ -107,6 +108,7 @@ registerEvent('email:label:removed', async (payload) => {
         newMail.labels = newMail.labels.filter(
           (l) => l._id !== payload.label._id
         );
+        newMail.activity.push(payload);
         return newMail;
       }
       return email;
@@ -118,6 +120,23 @@ registerEvent('email:label:removed', async (payload) => {
 
 registerEvent('email:delivered', async (payload) => {
   insertEmail(payload.email);
+});
+
+registerEvent('email:user:added', async (payload) => {
+  const { actor, emailId } = payload;
+
+  emails.update((list) => {
+    const newList = list.map((email) => {
+      if (emailId === email._id && !email.users.includes(actor._id)) {
+        const newMail = { ...email };
+        newMail.users.push(actor._id);
+        return newMail;
+      }
+      return email;
+    });
+
+    return newList;
+  });
 });
 
 registerEvent('email:task:created', async (payload) => {
