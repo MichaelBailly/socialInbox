@@ -8,6 +8,9 @@ import Label from './Labels/Label.svelte';
 import UserInline from './User/Inline.svelte';
 import TaskFloatingActionMenu from './Task/FloatingActionMenu.svelte';
 import TaskCreateForm from './Task/CreateForm.svelte';
+import { markAsRead } from '../../libs/emails/emailProvider';
+import { user } from '../../libs/users';
+import { afterUpdate } from 'svelte';
 
 
 export let email;
@@ -18,6 +21,7 @@ $: to = email.email.to || [];
 $: cc = email.email.cc || [];
 $: recipients = to.concat(cc);
 
+let emailId;
 let floatingMenu = false;
 let taskMenuCoords = [0, 0];
 let selectedText = '';
@@ -44,7 +48,12 @@ const onCloseMenu = (text) => {
   }
 }
 
-
+afterUpdate(() => {
+  if (emailId !== email._id) {
+    markAsRead(email, $user._id);
+  }
+  emailId = email._id;
+});
 </script>
 
 <svelte:head>
@@ -93,7 +102,7 @@ const onCloseMenu = (text) => {
   <hr class="" />
   <div class="block email-body content" on:mouseup={onSelection}>
     {#if floatingMenu}
-      <TaskFloatingActionMenu coords={taskMenuCoords} closeMenu={onCloseMenu} {selectedText} />      
+      <TaskFloatingActionMenu coords={taskMenuCoords} closeMenu={onCloseMenu} {selectedText} />
     {/if}
 
     <EmailViewBody email="{email}" />

@@ -73,3 +73,20 @@ export async function addLabel(actor, email, label) {
   debug('Sending event %s to kafka', message.event);
   await sendEvent(kafkaMessage);
 }
+
+export async function updateUserStateSeen(actor, email, state) {
+  const actorObj = Actor.fromUser(actor);
+  const message = {
+    event: 'email:user-state:seen:update',
+    sender: actorObj,
+    payload: {
+      emailId: email._id,
+      state,
+      actor: actorObj,
+    },
+  };
+
+  const kafkaMessage = KafkaMessage.fromObject(actor._id, message);
+  debug('Sending event %s to kafka', message.event);
+  await sendEvent(kafkaMessage);
+}

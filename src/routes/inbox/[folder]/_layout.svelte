@@ -10,7 +10,7 @@
 	export let segment;
   export let folder;
 
-	import { emails, myEmails, sharedEmails, fetchEmails, isLoading } from '../../../libs/emails/emailProvider';
+	import { emails, myEmails, sharedEmails, fetchEmails } from '../../../libs/emails/emailProvider';
 	import EmailListItem from '../../_components/EmailListItem.svelte';
 
   let emailsList = emails;
@@ -27,32 +27,23 @@
   };
 
   $: baseHref = `/inbox/${folder}`;
-
-	const getEmails = async () => {
-		return fetchEmails();
-	}
-
-	getEmails();
 </script>
 
 <svelte:head>
 	<title>All mails - SoBox</title>
 </svelte:head>
 
-{#await getEmails()}
-Loading your mailbox...
-{:then foo}
-	<div class="column list-column" tabindex="-1">
-    {#each $emailsList as email, index (email._id)}
-    <EmailListItem email="{email}" {baseHref} selected={email._id === segment} tabindex="{index}"></EmailListItem>
-    {:else}
-    Nothing to display !
-    {/each}
+<div class="column list-column" tabindex="-1">
+	{#each $emailsList as email, index (email._id)}
+	<EmailListItem email="{email}" {baseHref} selected={email._id === segment} tabindex="{index}"></EmailListItem>
+	{:else}
+	Nothing to display !
+	{/each}
 </div>
 <div class="column content-column p-0">
-  <slot></slot>
+<slot></slot>
 </div>
-{/await}
+
 
 
 <style lang='less'>

@@ -1,4 +1,6 @@
 <script>
+import { user } from '../libs/users';
+import UserInline from '../routes/_components/User/Inline.svelte';
 </script>
 
 <style>
@@ -29,13 +31,12 @@ nav {
 
     <div class="navbar-end">
       <div class="navbar-item">
-        <div class="buttons">
-          <a class="button is-light" href="/settings" title="Settings">
-            <span class="icon">
-              <i class="fas fa-cog fa-lg"></i>
-            </span>
-          </a>
-        </div>
+        <a class="button" href="/settings" title="Settings">
+          <span class="icon">
+            <i class="fas fa-cog fa-lg"></i>
+          </span>
+        </a>
+        <UserInline user={$user} bgclass="has-background-white-bis is-large" />
       </div>
     </div>
 	</div>

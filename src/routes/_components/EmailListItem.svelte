@@ -5,15 +5,19 @@ import ListItemAvatar from './ListItemAvatar.svelte';
 import EmailListItemDate from './EmailListItemDate.svelte';
 import Label from './Labels/Label.svelte';
 import { chatStates } from '../../libs/chat/chatProvider';
+import { user } from '../../libs/users';
+
 
 export let email;
 export let baseHref;
 export let selected;
 
+$: isSeen = email.userState[$user._id ] && email.userState[$user._id ].seen || false;
 $: from = email.email.from[0] ||'unknown';
 $: subject = email.email.subject ||'No subject';
 $: chatState = $chatStates[email._id] ||{};
 $: activeTasks = email.tasks.filter(task => new Date(task.deadline.date).getTime() > new Date().getTime()).length;
+
 
 const onClick = () => {
   goto(`${baseHref}/${email._id}`);
@@ -26,7 +30,7 @@ const onClick = () => {
       <div class="from is-size-6 is-uppercase has-text-weight-bold has-text-grey-light"><EmailRecipientDisplay recipient='{from}'></EmailRecipientDisplay></div>
       <div class="is-size-6 has-text-weight-light"><EmailListItemDate email="{email}"></EmailListItemDate></div>
     </div>
-    <div class="subject is-size-6 has-text-weight-bold">{subject}</div>
+    <div class="subject is-size-6" class:has-text-weight-bold={!isSeen}>{subject}</div>
     <div class="body-preview is-size-7">{email.email.preview || ''}</div>
     <div class="collaborative-container">
       <div class="labels">
@@ -42,7 +46,7 @@ const onClick = () => {
             <span class="icon" title="{activeTasks}/{email.tasks.length} active tasks">
               <i class="fas fa-tasks"></i>
             </span>
-          </span>  
+          </span>
         {/if}
         <span class="chat-status is-size-7 {chatState.unreadCount ? 'has-text-primary' : ''}">
           {#if chatState.total}

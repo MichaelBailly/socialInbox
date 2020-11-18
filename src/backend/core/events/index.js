@@ -9,6 +9,7 @@ import { EVENTS as EVENTS8 } from './email/sync';
 import { EVENTS as EVENTS9 } from './email/label-add';
 import { EVENTS as EVENTS10 } from './chat-message/last-seen-pointer-update';
 import { EVENTS as EVENTS11 } from './task';
+import { EVENTS as EVENTS12 } from './email/user-state';
 
 export const eventsListeners = {};
 
@@ -23,3 +24,4 @@ Object.keys(EVENTS8).forEach((k) => (eventsListeners[k] = EVENTS8[k]));
 Object.keys(EVENTS9).forEach((k) => (eventsListeners[k] = EVENTS9[k]));
 Object.keys(EVENTS10).forEach((k) => (eventsListeners[k] = EVENTS10[k]));
 Object.keys(EVENTS11).forEach((k) => (eventsListeners[k] = EVENTS11[k]));
+Object.keys(EVENTS12).forEach((k) => (eventsListeners[k] = EVENTS12[k]));

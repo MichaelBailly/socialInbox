@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import { user } from '../users';
-import { get, testFetch } from 'api';
+import { get, put, testFetch } from 'api';
 import { registerEvent } from '../sse';
 
 export const endpoint = '/api/emails';
@@ -46,6 +46,13 @@ export const fetchEmails = async () => {
   } catch (e) {
     receiveEmailsError(e);
   }
+};
+
+export const markAsRead = async (email, userId) => {
+  if (email.userState[userId] && email.userState[userId].seen) {
+    return;
+  }
+  return await put(`/api/emails/${email._id}/read`, { read: true });
 };
 
 const insertEmail = (email) => {
@@ -146,6 +153,22 @@ registerEvent('email:task:created', async (payload) => {
         const newMail = { ...email };
         newMail.tasks.push(payload.task);
         newMail.activity.push(payload);
+        return newMail;
+      }
+      return email;
+    });
+
+    return newList;
+  });
+});
+
+registerEvent('email:user-state:seen:updated', async (payload) => {
+  emails.update((list) => {
+    const newList = list.map((email) => {
+      if (payload.emailId === email._id) {
+        const newMail = { ...email };
+        newMail.userState[payload.actor._id] = newMail.userState[payload.actor._id] || {};
+        newMail.userState[payload.actor._id].seen = payload.state;
         return newMail;
       }
       return email;

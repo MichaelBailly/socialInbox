@@ -9,9 +9,5 @@
 	<title>labels - SoBox</title>
 </svelte:head>
 
-{#await getEmails()}
-Loading emails............
-{:then foo}
 <slot />
-{/await}
 

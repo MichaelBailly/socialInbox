@@ -8,16 +8,34 @@
 
 <script>
 import { onMount } from 'svelte';
+import { stores } from '@sapper/app';
 import Modal from '../../components/Modal.svelte';
 import { labels, loadLabels } from '../../libs/labels/labelProvider';
 import Label from '../_components/Labels/Label.svelte';
 import { connect } from '../../libs/sse';
+import { emails, sharedEmails, myEmails, fetchEmails } from '../../libs/emails/emailProvider';
+import { user } from '../../libs/users';
+import Badge from '../_components/Badge.svelte';
+import LabelMenuItem from './_components/Label/MeunItem.svelte';
+
+const { page } = stores();
+let selected = {};
+
+$: {
+	selected = {};
+	if ($page.params.folder) {
+		selected.folder = $page.params.folder;
+	} else if ($page.params.labelName) {
+		selected.labelName = $page.params.labelName;
+	}
+};
+$: unreadAll = $emails.filter(e => !e.userState[$user._id] || !e.userState[$user._id].seen).length;
+$: unreadShared = $sharedEmails.filter(e => !e.userState[$user._id] || !e.userState[$user._id].seen).length;
+$: unreadMy = $myEmails.filter(e => !e.userState[$user._id] || !e.userState[$user._id].seen).length;
 
 onMount(() => {
 	console.log('/inbox: connecting to SSE');
 	connect();
-	console.log('/inbox: loading labels');
-	loadLabels();
 });
 </script>
 
@@ -28,7 +46,9 @@ onMount(() => {
 <div class="emails-menu">
 	Email menu
 </div>
-
+{#await Promise.all([loadLabels(), fetchEmails()])}
+Loading your inbox...
+{:then foo}
 <div class="columns p-0 m-0">
 
 	<div class="column menu-column">
@@ -37,17 +57,34 @@ onMount(() => {
 				Emails
 			</p>
 			<ul class="menu-list">
-				<li><a href="/inbox/all">All emails</a></li>
-				<li><a href="/inbox/my">My emails</a></li>
-				<li><a href="/inbox/shared">Shared with me</a></li>
+				<li>
+					<a href="/inbox/all" class:is-active={selected.folder === 'all'}>
+						<span>All emails</span>
+						<span class="is-pulled-right">
+							<Badge classname="has-background-primary" count="{unreadAll}" />
+						</span>
+					</a>
+				</li>
+				<li><a href="/inbox/my" class:is-active={selected.folder === 'my'}>
+					<span>My emails</span>
+					<span class="is-pulled-right">
+						<Badge classname="has-background-primary" count="{unreadMy}" />
+					</span>
+				</a></li>
+				<li><a href="/inbox/shared" class:is-active={selected.folder === 'shared'}>
+					<span>Shared emails</span>
+					<span class="is-pulled-right">
+						<Badge classname="has-background-primary" count="{unreadShared}" />
+					</span>
+				</a></li>
 			</ul>
 			<p class="menu-label">
 				Labels
 			</p>
 			{#if $labels.length}
 				<ul class="menu-list">
-					{#each $labels as label}				
-						<li><a href="/inbox/labels/{label.name}"><Label {label} /></a></li>
+					{#each $labels as label}
+						<LabelMenuItem {label} selected={selected.labelName} />
 					{/each}
 				</ul>
 			{:else}
@@ -65,6 +102,7 @@ onMount(() => {
   </div>
   <slot>In layout</slot>
 </div>
+{/await}
 <Modal />
 
 <style lang='less'>
