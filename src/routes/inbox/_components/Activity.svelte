@@ -7,6 +7,7 @@ import WorkSpaceActivityChatStarted from './Activity/ChatStarted.svelte';
 import WorkSpaceActivityEmailLabelAdded from './Activity/EmailLabelAdded.svelte';
 import WorkSpaceActivityEmailLabelRemoved from './Activity/EmailLabelRemoved.svelte';
 import WorkSpaceActivityEmailTaskCreated from './Activity/EmailTaskCreated.svelte';
+import EmailTaskDoneStatusUpdated from './Activity/EmailTaskDoneStatusUpdated.svelte';
 
 const compMap = {
   'email:share': WorkSpaceActivityEmailShared,
@@ -14,6 +15,7 @@ const compMap = {
   'email:label:added': WorkSpaceActivityEmailLabelAdded,
   'email:label:removed': WorkSpaceActivityEmailLabelRemoved,
   'email:task:created': WorkSpaceActivityEmailTaskCreated,
+  'email:task:done-status:updated': EmailTaskDoneStatusUpdated,
 };
 
 </script>

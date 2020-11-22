@@ -76,6 +76,8 @@ export async function get(req, res) {
       emailUserAddedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'email:user-state:seen:updated') {
       emailUserStateSeenUpdatedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'email:task:done-status:updated') {
+      emailTaskDoneStatusUpdatedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -142,3 +144,4 @@ const ChatMessageLastSeenPointerUpdatedEvent = sendOnlyToSender;
 const taskCreatedEvent = sendIfUserIsInEmail;
 const emailUserAddedEvent = sendIfUserIsInEmail;
 const emailUserStateSeenUpdatedEvent = sendOnlyToSender;
+const emailTaskDoneStatusUpdatedEvent = sendIfUserIsInEmail;

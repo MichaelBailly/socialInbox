@@ -1,4 +1,3 @@
-import logger from '../core/logger';
 import db from '../mongodb';
 
 export async function getEmailIfAllowed(actor, emailId, res = null) {

@@ -5,6 +5,17 @@ import sendNotification from '../../kafka/notifications/producer';
 
 const debug = logger.extend('activity');
 
+/**
+ * record an activity
+ *
+ * If forwardToNotifications is true:
+ * - kafkaMessage sender is set from activity.actor
+ * - kafkaMessage event is set from activity.name
+ *
+ * @param {Activity} activity the activity
+ * @param {String} emailId the email ID
+ * @param {Boolean} forwardToNotifications after having recorded the activity, send a notification
+ */
 export async function recordActivity(
   activity,
   emailId = null,

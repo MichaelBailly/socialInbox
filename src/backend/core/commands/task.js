@@ -19,3 +19,24 @@ export async function createTask(task) {
 
   await sendEvent(kafkaMessage);
 }
+
+export async function updateDoneStatus(actor, emailId, taskId, done) {
+  if (done !== true && done !== false) {
+    throw new Error('done should be a boolean');
+  }
+  const message = {
+    event: 'email:task:done-status:update',
+    sender: Actor.fromUser(actor),
+    payload: {
+      emailId,
+      taskId,
+      done,
+    },
+  };
+
+  debug('Publishing to Kafka %O', message);
+
+  const kafkaMessage = KafkaMessage.fromObject(actor._id, message);
+
+  await sendEvent(kafkaMessage);
+}

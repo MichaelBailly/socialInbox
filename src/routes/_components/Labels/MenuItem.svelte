@@ -1,7 +1,7 @@
 <script>
-import { emails } from "../../../../libs/emails/emailProvider";
-import Label from '../../../_components/Labels/Label.svelte';
-import Badge from '../../../_components/Badge.svelte';
+import { emails } from "../../../libs/emails/emailProvider";
+import Label from '../Labels/Label.svelte';
+import Badge from '../Badge.svelte';
 
 export let label;
 export let selected;

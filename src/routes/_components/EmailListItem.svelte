@@ -23,7 +23,7 @@ const onClick = () => {
   goto(`${baseHref}/${email._id}`);
 };
 </script>
-<div class="columns mail-item px-2 py-2" on:click={onClick} class:selected={selected} tabindex="0" on:focus={onClick}>
+<div class="columns mail-item px-2 py-2" class:has-background-white-ter={!selected && isSeen} on:click={onClick} class:selected={selected} tabindex="0" on:focus={onClick}>
   <div class="avatar pr-2"><ListItemAvatar resource="{from}" size="64"></ListItemAvatar></div>
   <div class="contents">
     <div class="head">

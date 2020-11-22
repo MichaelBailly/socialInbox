@@ -12,6 +12,7 @@ const notify = () => {
 
 <div class="field is-horizontal">
   <div class="field-label is-normal">
+    <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="label">Expeditor matches</label>
   </div>
   <div class="field-body">

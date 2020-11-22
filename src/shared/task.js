@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'bson';
 import Actor from './actor';
 
 const DEADLINE_SCALES = ['hour', 'day', 'week'];
@@ -64,6 +64,16 @@ export default class Task {
         'deadline should have a scale property that is in DEADLINE_SCALES set'
       );
     }
+    const taskDeadline = {
+      scale: deadline.scale,
+      count: deadline.count,
+      date: new Date(deadline.date),
+    };
+
+    if (isNaN(taskDeadline.date.getTime())) {
+      throw new Error('deadline.date should be a valid date');
+    }
+
     if (!(typeof description === 'string')) {
       throw new Error('descrption should be a String');
     }
@@ -75,7 +85,7 @@ export default class Task {
       emailId,
       creator: taskCreator,
       assignee: taskAssignee,
-      deadline: { ...deadline },
+      deadline: taskDeadline,
       description,
       done: Boolean(done),
       date: taskDate,

@@ -162,6 +162,24 @@ registerEvent('email:task:created', async (payload) => {
   });
 });
 
+registerEvent('email:task:done-status:updated', async (payload) => {
+  const { emailId, task } = payload;
+  emails.update((list) => {
+    const newList = list.map((email) => {
+      if (emailId === email._id) {
+        const newMail = { ...email };
+        newMail.tasks = email.tasks.filter(t => t._id !== task._id);
+        newMail.tasks.push(task);
+        newMail.activity.push(payload);
+        return newMail;
+      }
+      return email;
+    });
+
+    return newList;
+  });
+});
+
 registerEvent('email:user-state:seen:updated', async (payload) => {
   emails.update((list) => {
     const newList = list.map((email) => {
