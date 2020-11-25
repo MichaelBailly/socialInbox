@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { getEmailIfAllowed } from '../../../../backend/api-middleware/email-permission';
 import { createTask } from '../../../../backend/core/commands/task';
 import Actor from '../../../../shared/actor';
+import EmailHead from '../../../../shared/email-head';
 
 export async function post(req, res) {
   if (!req.session.user) {
@@ -10,7 +11,7 @@ export async function post(req, res) {
   const currentUser = req.session.user;
   const emailId = req.params.emailId;
 
-  const email = getEmailIfAllowed(currentUser, emailId, res);
+  const email = await getEmailIfAllowed(currentUser, emailId, res);
   if (!email) {
     return;
   }
@@ -30,6 +31,7 @@ export async function post(req, res) {
     deadline: req.body.deadline,
     description: req.body.description,
     emailId,
+    email: EmailHead.fromEmail(email.email),
     done: false,
     date: new Date(),
   };

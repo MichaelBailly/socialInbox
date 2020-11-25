@@ -1,5 +1,4 @@
 <script>
-
 import EmailViewShareForm from "./EmailViewShareForm.svelte";
 
 export let email;
@@ -25,7 +24,7 @@ const toggleVisible = () => isVisible = !isVisible;
   </div>
   <div class="dropdown-menu" role="menu">
     {#if isVisible}
-      <EmailViewShareForm email="{email}" />
+    <EmailViewShareForm email="{email}" />
     {/if}
   </div>
 </div>

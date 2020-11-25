@@ -2,8 +2,10 @@ import { ObjectId } from 'bson';
 import Task from '../../../shared/task';
 import TaskCreatedActivity from '../../../shared/task-created-activity';
 import TaskDoneStatusUpdatedActivity from '../../../shared/task-done-status-updated-activity';
+import UserNotification from '../../../shared/user-notification';
 import { dbCol } from '../../mongodb';
 import { recordActivity } from '../activity';
+import { createUserNotification } from '../commands/user-notification';
 import logger from '../logger';
 
 const debugF = logger.extend('events:task');
@@ -35,6 +37,17 @@ export async function taskCreateReceiver(kafkaMessage) {
   const activity = TaskCreatedActivity.fromKafkaMessage(kafkaMessage);
 
   await recordActivity(activity, task.emailId, true);
+
+  if (activity.actor._id !== activity.target._id) {
+    debug('creating user notification for user %s, task %s', activity.target.email, task.description);
+    const userNotification = UserNotification.fromObject({
+      activity,
+      user: activity.target,
+      seen: false,
+      emailId: task.emailId,
+    });
+    await createUserNotification(userNotification, kafkaMessage.sender());
+  }
 }
 
 export async function taskDoneStatusUpdateReceiver(kafkaMessage) {

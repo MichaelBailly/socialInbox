@@ -63,7 +63,7 @@ export async function get(req, res) {
   }
 
   let done = TASK_DONE.both;
-  if (req.query.done) {
+  if ('done' in req.query) {
     if (!(req.query.done in TASK_DONE)) {
       return res.status(400).json({ error: `done query string parameter should be in [${Object.keys(TASK_DONE).join(', ')}]` });
     }

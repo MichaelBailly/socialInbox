@@ -120,8 +120,12 @@
     }
   };
 
+  const isOpened = () => {
+    return !!Component;
+  }
+
   setContext(key, { open, close });
-  registerModal(open, close);
+  registerModal(open, close, isOpened);
 </script>
 
 <style>

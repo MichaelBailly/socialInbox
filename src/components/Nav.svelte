@@ -1,6 +1,7 @@
 <script>
 import { user } from '../libs/users';
 import UserInline from '../routes/_components/User/Inline.svelte';
+import NotificationNavButton from '../routes/_components/Notification/NavButton.svelte';
 </script>
 
 <style>
@@ -36,6 +37,7 @@ nav {
             <i class="fas fa-cog fa-lg"></i>
           </span>
         </a>
+        <NotificationNavButton />
         <UserInline user={$user} bgclass="has-background-white-bis is-large" />
       </div>
     </div>

@@ -1,6 +1,7 @@
 <script>
-import { formatDistanceToNow, formatRFC7231 } from "date-fns";
-import UserInline from '../../../_components/User/Inline.svelte';
+import { formatRFC7231 } from "date-fns";
+import UserInline from '../../_components/User/Inline.svelte';
+import TaskHumanDeadline from '../../_components/Task/HumanDeadline.svelte';
 import { put } from 'api';
 
 export let task;
@@ -24,7 +25,7 @@ const toggleDoneStatus = async () => {
     <div class="task-info pr-4">
       <div class="info">
         <span class="deadline" title="Deadline: {formatRFC7231(task.deadline.date)}">
-          <i class="fas fa-stopwatch" />  {formatDistanceToNow(task.deadline.date)}
+          <i class="fas fa-stopwatch" />  <TaskHumanDeadline date={task.deadline.date} />
         </span>
         {#if task.creator._id !== task.assignee._id}
         <span class="creator" title="Assigned by">

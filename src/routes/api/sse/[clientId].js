@@ -78,6 +78,8 @@ export async function get(req, res) {
       emailUserStateSeenUpdatedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'email:task:done-status:updated') {
       emailTaskDoneStatusUpdatedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'user:notification:created') {
+      userNotificationCreatedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -133,6 +135,13 @@ const emailDeliveredEvent = async (kafkaMessage, { user, send, debug }) => {
   send(kafkaMessage.event(), payload);
 };
 
+const sendToUser = async (kafkaMessage, { userId, send }) => {
+  const notification = kafkaMessage.payload();
+  if (userId === notification.user._id) {
+    send(kafkaMessage.event(), notification);
+  }
+};
+
 const emailSharedEvent = sendIfUserIsInEmail;
 const chatMessagePostedEvent = sendIfUserIsInEmail;
 const chatStartedEvent = sendIfUserIsInEmail;
@@ -145,3 +154,4 @@ const taskCreatedEvent = sendIfUserIsInEmail;
 const emailUserAddedEvent = sendIfUserIsInEmail;
 const emailUserStateSeenUpdatedEvent = sendOnlyToSender;
 const emailTaskDoneStatusUpdatedEvent = sendIfUserIsInEmail;
+const userNotificationCreatedEvent = sendToUser;

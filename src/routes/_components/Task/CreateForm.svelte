@@ -16,6 +16,7 @@ export let description = '';
 
 let selectedValue = { ...selectedUser, dn: getDisplayName(selectedUser) } ;
 
+
 // ------------------ SELECT SPECIFIC VARIABLES
 const optionIdentifier = '_id';
 
@@ -37,7 +38,9 @@ const loadOptions = async (q) => {
 // ---------------------------------------------
 
 let deadlineDateString;
+let isRecording = false;
 
+$: assigneeIsInMail = email.users.concat(email.usersShared).some((id) => id === selectedValue._id);
 $: deadlineDate = add(new Date(), {
     weeks: deadlineScale === 'week' && deadlineCount || 0,
     days: deadlineScale === 'day' && deadlineCount || 0,
@@ -48,8 +51,27 @@ $: deadlineDateString = format(deadlineDate, 'PPPP \'at\' HH\'h\'');
 $: canBeRecorded = selectedValue && selectedValue._id && description && description.length;
 
 const create = async () => {
-  if (!canBeRecorded) {
+  if (!canBeRecorded || isRecording) {
     return;
+  }
+
+  isRecording = true;
+
+  if (!assigneeIsInMail) {
+    try {
+      const response = await post(`/api/emails/${email._id}/share`, {
+        userIds: [selectedValue._id],
+      });
+      if (!response || response.error) {
+        throw new Error(`Bad server response: ${JSON.stringify(response)}`);
+      }
+    } catch(e) {
+      console.log('Unable to share email: ', e);
+      isRecording = false;
+      return;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
   await createTask({
@@ -61,13 +83,14 @@ const create = async () => {
     },
     description,
   });
-
+  isRecording = false;
   return onCreate();
 }
 
 const createTask = async (task) => {
   let id;
   try {
+
     const response = await post(`/api/tasks/${email._id}`, task);
     id = response._id;
   } catch(e) {
@@ -83,19 +106,6 @@ const createTask = async (task) => {
     <button class="delete" aria-label="delete" on:click={onCancel}></button>
   </div>
   <div class="message-body">
-    <div class="field is-horizontal">
-      <div class="field-label is-normal">
-        <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label class="label">
-          Assignee
-        </label>
-      </div>
-      <div class="field-body">
-        <div class="control is-expanded">
-          <Select {loadOptions} {optionIdentifier} {getOptionLabel} {getSelectionLabel} {noOptionsMessage} bind:selectedValue placeholder="Choose user..." />
-        </div>
-      </div>
-    </div>
     <div class="field is-horizontal has-addons is-narrow">
       <div class="field-label is-normal">
         <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -127,6 +137,24 @@ const createTask = async (task) => {
       </div>
     </div>
     <p class="help pb-2">Deadline set to {deadlineDateString}</p>
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label class="label">
+          Assignee
+        </label>
+      </div>
+      <div class="field-body">
+        <div class="control is-expanded">
+          <Select {loadOptions} {optionIdentifier} {getOptionLabel} {getSelectionLabel} {noOptionsMessage} bind:selectedValue placeholder="Choose user..." />
+        </div>
+      </div>
+    </div>
+    {#if !assigneeIsInMail}
+      <p class="help">Email <em>{email.email.subject}</em> will be shared with {selectedValue.dn} first.</p>
+    {/if}
+
     <div class="field">
       <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="label">Task</label>
@@ -136,10 +164,10 @@ const createTask = async (task) => {
     </div>
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-link" disabled={!canBeRecorded} on:click={create}>Save</button>
+        <button class="button is-link" disabled={!canBeRecorded || isRecording} on:click={create}>Save</button>
       </div>
       <div class="control">
-        <button class="button is-link is-light" on:click={onCancel}>Cancel</button>
+        <button class="button is-link is-light" on:click={onCancel} disabled={isRecording}>Cancel</button>
       </div>
     </div>
   </div>

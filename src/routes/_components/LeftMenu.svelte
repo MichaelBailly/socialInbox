@@ -12,12 +12,15 @@ const { page } = stores();
 let selected = {};
 
 $: {
+  console.log($page);
 	selected = {};
 	if ($page.params.folder) {
 		selected.folder = $page.params.folder;
 	} else if ($page.params.labelName) {
 		selected.labelName = $page.params.labelName;
-	}
+	} else if ($page.path === '/tasks') {
+    selected.tasks = true;
+  }
 };
 $: unreadAll = $emails.filter(e => !e.userState[$user._id] || !e.userState[$user._id].seen).length;
 $: unreadShared = $sharedEmails.filter(e => !e.userState[$user._id] || !e.userState[$user._id].seen).length;
@@ -74,7 +77,7 @@ onMount(() => {
       Tasks
     </p>
     <ul class="menu-list">
-      <li><a href="/inbox/tasks">My tasks</a></li>
+      <li><a href="/tasks" class:is-active={selected.tasks}>My tasks</a></li>
     </ul>
   </aside>
 </div>

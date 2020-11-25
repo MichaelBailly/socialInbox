@@ -1,10 +1,10 @@
 <script>
 import { get } from 'api';
-import { add, endOfMonth, endOfWeek, formatDistanceToNow, formatRFC7231, isSameMonth, isSameWeek } from 'date-fns';
+import { add, endOfMonth, endOfWeek, formatDistanceToNow, isSameMonth, isSameWeek, sub } from 'date-fns';
 import { onMount } from 'svelte';
 import { writable } from 'svelte/store';
-import Task from '../../../shared/task';
-import UserInline from '../../_components/User/Inline.svelte';
+import { lateTasks } from '../../libs/tasks/tasksProvider';
+import Task from '../../shared/task';
 import TaskBox from './_components/TaskBox.svelte';
 
 const taskList = writable([]);
@@ -21,7 +21,6 @@ let nextMonth = [];
 onMount(async () => {
   const today = new Date();
   const lastSecondOfWeek = endOfWeek(today, sameWeekOpts);
-
   const sameMonth = isSameMonth(today, lastSecondOfWeek);
   let lastOfMonth;
   if (sameMonth) {
@@ -47,6 +46,17 @@ const formatDate = (date) => {
 </script>
 
 <article>
+  {#if $lateTasks.length}
+  <section class="section">
+    <div class="subtitle is-4">Late tasks</div>
+    <div class="tasks">
+      {#each $lateTasks as task}
+        <TaskBox {task} />
+      {/each}
+    </div>
+  </section>
+  {/if}
+
   <section class="section">
     <div class="subtitle is-4">This week</div>
     {#if thisWeek.length}
@@ -95,6 +105,7 @@ const formatDate = (date) => {
 
 <style lang="less">
 article {
+  flex: 1 1 auto;
   overflow-y: auto;
 }
 .tasks {

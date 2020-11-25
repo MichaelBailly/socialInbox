@@ -7,6 +7,7 @@ export default class Task {
   constructor({
     _id,
     emailId,
+    email,
     creator,
     assignee,
     deadline,
@@ -16,6 +17,7 @@ export default class Task {
   }) {
     this._id = _id;
     this.emailId = emailId;
+    this.email = email;
     this.creator = creator;
     this.assignee = assignee;
     this.deadline = { ...deadline };
@@ -27,6 +29,7 @@ export default class Task {
   static fromObject({
     _id,
     emailId,
+    email = {},
     creator,
     assignee,
     deadline,
@@ -51,6 +54,10 @@ export default class Task {
 
     if (!emailId || typeof emailId !== 'string') {
       throw new Error('Task should have an emailId');
+    }
+
+    if (!email) {
+      throw new Error('email should exist');
     }
 
     if (!deadline || !deadline.date) {
@@ -83,6 +90,7 @@ export default class Task {
     return new Task({
       _id: taskId,
       emailId,
+      email,
       creator: taskCreator,
       assignee: taskAssignee,
       deadline: taskDeadline,

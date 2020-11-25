@@ -1,9 +1,11 @@
 let openModalFn;
 let closeModalFn;
+let isOpenedFn = () => {};
 
-export function registerModal(open, close) {
+export function registerModal(open, close, isOpened) {
   openModalFn = open;
   closeModalFn = close;
+  isOpenedFn = isOpened;
 }
 
 export function openModal() {
@@ -12,4 +14,8 @@ export function openModal() {
 
 export function closeModal() {
   return closeModalFn;
+}
+
+export function isOpened() {
+  return isOpenedFn();
 }

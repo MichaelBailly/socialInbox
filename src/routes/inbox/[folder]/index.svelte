@@ -67,8 +67,4 @@ $: {
   align-items: center;
   width: 100%;
 }
-
-activity-container {
-
-}
 </style>
