@@ -21,7 +21,7 @@
     "qs": "^6.9.4",
     "session-file-store": "^1.5.0",
     "sirv": "^1.0.0",
-    "svelte-select": "^3.14.0",
+    "svelte-select": "^3.14.1",
     "uuid": "^8.3.1"
   },
   "devDependencies": {
@@ -48,7 +48,7 @@
     "rollup-plugin-terser": "^7.0.0",
     "sapper": "^0.28.0",
     "sass": "^1.28.0",
-    "svelte": "^3.29.7",
+    "svelte": "~3.29.7",
     "svelte-preprocess": "^4.5.2"
   }
 }
