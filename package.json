@@ -14,7 +14,7 @@
     "date-fns": "^2.16.1",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "kafkajs": "^1.14.0",
+    "kafkajs": "^1.15.0",
     "lodash": "^4.17.20",
     "mongodb": "^3.6.3",
     "node-fetch": "^2.6.1",
