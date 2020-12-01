@@ -25,14 +25,22 @@ export default class UserNotification {
       throw new Error('activity property is required');
     }
     if (!isActivity(activity)) {
-      throw new Error('activity propert should be an valid activity object');
+      throw new Error('activity property should be an valid activity object');
     }
+
+    const userActivity = { ...activity };
+    try {
+      userActivity.date = new Date(userActivity.date);
+    } catch (e) {
+      throw new Error('activity.date property should be a valid date');
+    }
+
     if (!user || !user.origin || !user._id) {
       throw new Error('user property should be a valid Actor');
     }
 
     return new UserNotification({
-      activity,
+      activity: userActivity,
       user,
       _id,
       seen,

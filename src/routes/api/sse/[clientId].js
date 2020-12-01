@@ -80,6 +80,8 @@ export async function get(req, res) {
       emailTaskDoneStatusUpdatedEvent(kafkaMessage, eventCallbackArgs);
     } else if (kafkaMessage.event() === 'user:notification:created') {
       userNotificationCreatedEvent(kafkaMessage, eventCallbackArgs);
+    } else if (kafkaMessage.event() === 'user:notifications:seen:updated') {
+      userNotificationsSeenUpdatedEvent(kafkaMessage, eventCallbackArgs);
     }
   });
 
@@ -155,3 +157,4 @@ const emailUserAddedEvent = sendIfUserIsInEmail;
 const emailUserStateSeenUpdatedEvent = sendOnlyToSender;
 const emailTaskDoneStatusUpdatedEvent = sendIfUserIsInEmail;
 const userNotificationCreatedEvent = sendToUser;
+const userNotificationsSeenUpdatedEvent = sendToUser;

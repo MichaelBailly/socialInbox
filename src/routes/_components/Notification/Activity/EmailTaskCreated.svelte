@@ -8,7 +8,6 @@ import UserInline from '../../User/Inline.svelte';
 <ActivityTemplate {userNotification}>
   <span>
     <UserInline user={userNotification.activity.task.creator} /> created a task on email <em>{userNotification.activity.task.email.subject}</em> and assigned it to you.
-
   </span>
   <span slot="icon" class="icon is-medium has-text-warning">
     <i class="fas fa-lg fa-tasks"></i>

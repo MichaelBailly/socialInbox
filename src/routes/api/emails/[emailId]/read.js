@@ -1,5 +1,5 @@
-import { getEmailIfAllowed } from "../../../../backend/api-middleware/email-permission";
-import { updateUserStateSeen } from "../../../../backend/core/commands/email";
+import { getEmailIfAllowed } from '../../../../backend/api-middleware/email-permission';
+import { updateUserStateSeen } from '../../../../backend/core/commands/email';
 
 export async function put(req, res) {
   const { emailId } = req.params;

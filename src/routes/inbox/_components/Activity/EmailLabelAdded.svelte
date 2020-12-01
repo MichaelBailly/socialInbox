@@ -5,12 +5,13 @@ import { user as userStore, getDisplayName } from '../../../../libs/users';
 import ActivityTemplate from './ActivityTemplate.svelte';
 import Label from '../../../_components/Labels/Label.svelte';
 import AutomationInlineDisplay from '../../../_components/Automation/InlineDisplay.svelte';
+import UserInline from '../../../_components/User/Inline.svelte';
 
 let user = {};
 
 userStore.subscribe((value) => user = value);
 
-$: actor = activity.actor._id === user._id;
+$: isActor = activity.actor._id === user._id;
 $: actorDisplayName = getDisplayName(activity.actor);
 
 </script>
@@ -18,7 +19,7 @@ $: actorDisplayName = getDisplayName(activity.actor);
 <ActivityTemplate date="{activity.date}">
 <span>
   {#if activity.actor.origin === 'user'}
-    {#if actor}You{:else}{actorDisplayName}{/if}
+    {#if isActor}You{:else}<UserInline user={activity.actor} />{/if}
     added the label <Label label={activity.label} />
   {:else}
   Label <Label label={activity.label} /> added by automation <AutomationInlineDisplay automation={activity.actor} />

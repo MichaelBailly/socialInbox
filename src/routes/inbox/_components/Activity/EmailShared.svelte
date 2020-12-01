@@ -10,19 +10,18 @@ let user = {};
 
 userStore.subscribe((value) => user = value);
 
-$: actor = activity.actor._id === user._id;
-$: actorDisplayName = getDisplayName(activity.actor);
+$: isActor = activity.actor._id === user._id;
 $: targetDisplayName = getDisplayName(activity.target);
 
 </script>
 
 <ActivityTemplate date="{activity.date}">
 {#if activity.actor.origin === 'user'}
-  {#if actor}
+  {#if isActor}
   <span>You shared this email with <UserInline user={activity.target} /></span>
   {:else}
   <span>
-    {actorDisplayName} shared this email with you
+    <UserInline user={activity.actor} /> shared this email with you
   </span>
   {/if}
 {:else}

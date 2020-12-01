@@ -1,5 +1,5 @@
-import { requireUser } from '../../backend/api-middleware/user';
-import { dbCol } from '../../backend/mongodb';
+import { requireUser } from '../../../backend/api-middleware/user';
+import { dbCol } from '../../../backend/mongodb';
 
 /**
  * Get notifications for the current user

@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { get } from 'api';
 import { registerEvent } from './sse';
-import { isAfter, isBefore } from 'date-fns';
+import { isAfter } from 'date-fns';
 import EmailHead from '../shared/email-head';
 
 export const unreadNotifications = writable([]);
@@ -10,6 +10,7 @@ export const start = () => {
   const unregister = registerEvent('user:notification:created', (payload) => {
     updateStore([payload]);
   });
+  const unregister2 = registerEvent('user:notifications:seen:updated', filterOutIds);
   loadFromServer();
 };
 
@@ -51,6 +52,11 @@ const updateStore = (notifications) => {
 
     return newStoreContents;
   });
+};
+
+const filterOutIds = (payload) => {
+  const filter = n => !payload.ids.includes(n._id);
+  unreadNotifications.update((notifications) => notifications.filter(filter));
 };
 
 const hydrateNotification = (n) => {

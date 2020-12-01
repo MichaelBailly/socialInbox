@@ -5,6 +5,7 @@ import { user as userStore, getDisplayName } from '../../../../libs/users';
 import ActivityTemplate from './ActivityTemplate.svelte';
 import Label from '../../../_components/Labels/Label.svelte';
 import AutomationInlineDisplay from '../../../_components/Automation/InlineDisplay.svelte';
+import UserInline from '../../../_components/User/Inline.svelte';
 
 let user = {};
 
@@ -18,7 +19,7 @@ $: actorDisplayName = getDisplayName(activity.actor);
 <ActivityTemplate date="{activity.date}">
 <span>
   {#if activity.actor.origin === 'user'}
-    {#if actor}You{:else}{actorDisplayName}{/if}
+    {#if actor}You{:else}<UserInline user={activity.actor} />{/if}
     removed the label <Label label={activity.label} />
   {:else}
     Label <Label label={activity.label} /> removed by automation <AutomationInlineDisplay automation={activity.actor} />
