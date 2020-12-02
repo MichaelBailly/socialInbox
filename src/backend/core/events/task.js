@@ -86,7 +86,10 @@ export async function taskDoneStatusUpdateReceiver(kafkaMessage) {
     },
     {
       arrayFilters: [
-        { 'elem.done': !done },
+        {
+          'elem.done': !done,
+          'elem._id': task._id,
+        },
       ],
     });
 

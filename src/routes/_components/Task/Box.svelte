@@ -1,10 +1,13 @@
 <script>
-import { formatRFC7231 } from "date-fns";
-import UserInline from '../../_components/User/Inline.svelte';
-import TaskHumanDeadline from '../../_components/Task/HumanDeadline.svelte';
+import { formatRFC7231, isBefore } from "date-fns";
+import UserInline from '../User/Inline.svelte';
+import TaskHumanDeadline from './HumanDeadline.svelte';
 import { put } from 'api';
 
 export let task;
+export let showEmailSubject = true;
+
+$: isLate = isBefore(task.deadline.date, new Date());
 
 const toggleDoneStatus = async () => {
   console.log('starting toggleDoneStatus');
@@ -18,13 +21,15 @@ const toggleDoneStatus = async () => {
 </script>
 
 <div class="box">
+  {#if showEmailSubject}
   <div class="task-email">
     <i class="fas far fa-envelope" /> <strong>{task.emailSubject}</strong>
   </div>
+  {/if}
   <div class="task-content">
     <div class="task-info pr-4">
       <div class="info">
-        <span class="deadline" title="Deadline: {formatRFC7231(task.deadline.date)}">
+        <span class="deadline" title="Deadline: {formatRFC7231(task.deadline.date)}" class:has-text-danger={isLate}>
           <i class="fas fa-stopwatch" />  <TaskHumanDeadline date={task.deadline.date} />
         </span>
         {#if task.creator._id !== task.assignee._id}
@@ -56,6 +61,8 @@ const toggleDoneStatus = async () => {
   min-width: 400px;
   max-width: 600px;
   flex: 1 1 auto;
+  margin-right: 2rem;
+  margin-left: 2rem;
 
   .task-content {
     display: flex;

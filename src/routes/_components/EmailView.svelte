@@ -14,6 +14,9 @@ import { afterUpdate } from 'svelte';
 
 
 export let email;
+export let showActionMenu = true;
+export let showShareMenu = true;
+export let headOnly = false;
 
 $: subject = email.email.subject || 'No subject';
 $: from = email.email.from[0] ||'unknown';
@@ -62,43 +65,50 @@ afterUpdate(() => {
 
 <div class="box email-display">
   <div class="block headers">
-    <div class="subject pl-2 pb-2">
-      <div>
-        <h4 class="title is-4  is-spaced">{subject}
-          {#each email.labels as label (label._id)}
-          <span class="pr-2 has-text-weight-normal"><Label {label} /></span>
-        {/each}
-        </h4>
-
+    <div class="level pl-2 pb-2 mb-0">
+      <div class="level-left">
+        <div class="level-item">
+          <h4 class="title is-4  is-spaced">{subject}
+            {#each email.labels as label (label._id)}
+            <span class="pr-2 has-text-weight-normal"><Label {label} /></span>
+          {/each}
+          </h4>
+        </div>
       </div>
-      <div>
-        <EmailViewActionButton {email} />
+      {#if  showActionMenu}
+      <div class="level-right">
+        <div class="level-item">
+          <EmailViewActionButton {email} />
+        </div>
       </div>
+      {/if}
     </div>
     <div class="level">
       <div class="level-left">
         <div class="level-item">
-          <h6 class="subtitle is-6"><EmailListItemDate {email} fullDate="true" /></h6>
+          <h6 class="subtitle is-6"><UserInline bgclass="has-background-white-ter" user='{from}' /> , <EmailListItemDate {email} fullDate="true" /></h6>
         </div>
       </div>
+      {#if showShareMenu}
       <div class="level-right">
-        <div class="level-item">
+        <div class="level-item is-narrow">
           <EmailViewShare {email} />
         </div>
       </div>
+      {/if}
     </div>
-
-
-    <span class="tag is-white">From: </span><UserInline bgclass="has-background-white-ter" user='{from}' />
-    {#if recipients.length}
-      <div class="tags">
-        <span class="tag is-white">To: </span>
-        {#each recipients as recipient}
-          <UserInline bgclass="has-background-white-ter" user='{recipient}' />
-        {/each}
-      </div>
+    {#if !headOnly}
+      {#if recipients.length}
+        <div class="tags">
+          <span class="tag is-white">To: </span>
+          {#each recipients as recipient}
+            <UserInline bgclass="has-background-white-ter" user='{recipient}' />
+          {/each}
+        </div>
+      {/if}
     {/if}
   </div>
+  {#if !headOnly}
   <hr class="" />
   <div class="block email-body content" on:mouseup={onSelection}>
     {#if floatingMenu}
@@ -107,6 +117,7 @@ afterUpdate(() => {
 
     <EmailViewBody email="{email}" />
   </div>
+  {/if}
 </div>
 
 <style lang="less">

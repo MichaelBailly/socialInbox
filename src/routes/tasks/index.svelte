@@ -5,7 +5,7 @@ import { onMount } from 'svelte';
 import { writable } from 'svelte/store';
 import { lateTasks } from '../../libs/tasks/tasksProvider';
 import Task from '../../shared/task';
-import TaskBox from './_components/TaskBox.svelte';
+import TaskBox from '../_components/Task/Box.svelte';
 
 const taskList = writable([]);
 const sameWeekOpts = { weekStartsOn: 1 };

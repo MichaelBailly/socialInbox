@@ -2,17 +2,23 @@
 export let email;
 
 import { afterUpdate, beforeUpdate, onMount, tick } from 'svelte';
-
 import { writable } from 'svelte/store';
+import { goto } from '@sapper/app';
+import { stores } from '@sapper/app';
+
 import { getChat, chatStates } from '../../../libs/chat/chatProvider';
 import EmailView  from '../../_components/EmailView.svelte';
 import ChatMessage from './ChatMessage.svelte';
 import Activity from './Activity.svelte';
 
+import Badge from '../../_components/Badge.svelte';
+
 const fakeObserver = {
   observe() {},
   unobserve() {},
 };
+const { page } = stores();
+
 
 let chat;
 let messages = writable([]);
@@ -43,6 +49,7 @@ $: chatMessages = $messages.map(m => {
   };
 });
 $: stream = activities.concat(chatMessages).sort((m1, m2) => m1.ts - m2.ts);
+$: activeTasksCount = email.tasks.filter(t => t.done).length;
 
 const keyWatcher = (event) => {
   if (event.key === 'Enter') {
@@ -122,6 +129,22 @@ onMount(async () => {
     </p>
   </div>
 </div>
+<div class="workspace-modules">
+  <div title="Email tasks" class="tasks" on:click={() => goto(`${$page.path}/tasks`)}>
+    {#if email.tasks.length}
+      <button class="button is-warning">
+        <span class="icon">
+        <i class="fas fa-tasks"></i>
+        </span>
+      </button>
+      {#if activeTasksCount}
+        <div class="has-text-centered has-text-black">
+          <Badge count={activeTasksCount} classname="has-background-warning has-text-black" />
+        </div>
+      {/if}
+    {/if}
+  </div>
+</div>
 
 <style lang="less">
 .workspace {
@@ -138,5 +161,21 @@ onMount(async () => {
 
 .control.text-control {
   width: 100%;
+}
+
+.workspace-modules {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+
+  .tasks {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.tasks-container {
+  position: absolute;
+  background-color: green;
 }
 </style>
