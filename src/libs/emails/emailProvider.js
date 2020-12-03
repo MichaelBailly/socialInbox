@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import { user } from '../users';
-import { get, put, testFetch } from 'api';
+import { get, put, send } from 'api';
 import { registerEvent } from '../sse';
 
 export const endpoint = '/api/emails';
@@ -25,6 +25,7 @@ export const requestEmails = () => isLoading.set(true);
 export const receiveEmailSuccess = (data) => {
   // Do any needed data transformation to the received payload here
   emails.set(data);
+  console.log('setting emauil data in email store', data.length);
   isLoading.set(false);
 };
 
@@ -34,14 +35,15 @@ export const receiveEmailsError = (error) => {
   isLoading.set(false);
 };
 
-export const fetchEmails = async () => {
-  if (!testFetch()) {
-    return;
-  }
-  requestEmails();
+export const fetchEmails = async (fetchInstance) => {
+  requestEmails(fetchInstance);
 
   try {
-    const emailResponse = await get(endpoint);
+    const emailResponse = await send({
+      method: 'GET',
+      path: endpoint,
+      fetchInstance,
+    });
     receiveEmailSuccess(emailResponse.emails);
   } catch (e) {
     receiveEmailsError(e);

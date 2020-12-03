@@ -20,6 +20,7 @@ const fakeObserver = {
 const { page } = stores();
 
 
+let loadChat = false;
 let chat;
 let messages = writable([]);
 let inputValue = '';
@@ -29,9 +30,12 @@ let autoscroll = {
   lastEmailId: null,
   on: false,
 };
+let chatState = {};
+let activities = [];
+let activeTasksCount = 0;
 
 $: {
-  if (email && email._id && (!chat || chat.id !== email._id)) {
+  if (loadChat && email && email._id && (!chat || chat.id !== email._id)) {
     const [chatInstance, store] = getChat(email._id);
     messages = store;
     chatMessages = [];
@@ -39,8 +43,8 @@ $: {
     chatInstance.loadPrevious();
   }
 };
-$: chatState = $chatStates[email._id] ||{};
-$: activities = email.activity.map(a => ({...a, component: Activity, ts: new Date(a.date).getTime()}));
+$: if (email && email._id) chatState = $chatStates[email._id] || {};
+$: if (email && email.activity) activities = email.activity.map(a => ({...a, component: Activity, ts: new Date(a.date).getTime()}));
 $: chatMessages = $messages.map(m => {
   return {
     ...m,
@@ -49,7 +53,8 @@ $: chatMessages = $messages.map(m => {
   };
 });
 $: stream = activities.concat(chatMessages).sort((m1, m2) => m1.ts - m2.ts);
-$: activeTasksCount = email.tasks.filter(t => t.done).length;
+$: if (email && email.tasks) activeTasksCount = email.tasks.filter(t => t.done).length;
+$: tasks = email && email.tasks || [];
 
 const keyWatcher = (event) => {
   if (event.key === 'Enter') {
@@ -87,6 +92,9 @@ beforeUpdate(async () => {
 });
 
 afterUpdate(() => {
+  if (!email) {
+    return;
+  }
   if (autoscroll.lastEmailId !== email._id) {
     scrollArea.scrollTo(0, 0);
   }
@@ -107,6 +115,8 @@ onMount(async () => {
   scrollAreaObserver = new IntersectionObserver(scrollAreaCallback, options);
 
   scrollArea.scrollTo(0, 0);
+
+  loadChat = true;
 });
 </script>
 <div class="workspace has-background-light">
@@ -131,7 +141,7 @@ onMount(async () => {
 </div>
 <div class="workspace-modules">
   <div title="Email tasks" class="tasks" on:click={() => goto(`${$page.path}/tasks`)}>
-    {#if email.tasks.length}
+    {#if tasks.length}
       <button class="button is-warning">
         <span class="icon">
         <i class="fas fa-tasks"></i>

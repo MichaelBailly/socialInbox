@@ -39,7 +39,6 @@ const updateStore = (notifications) => {
         newStoreContents.splice(index, 1, hydratedNotif);
       } else {
         const previousNotifIndex = newStoreContents.findIndex(notification => {
-          console.log(new Date(hydratedNotif.activity.date), new Date(notification.activity.date), isAfter(new Date(hydratedNotif.activity.date), new Date(notification.activity.date)));
           return isAfter(new Date(hydratedNotif.activity.date), new Date(notification.activity.date));
         });
         if (previousNotifIndex < 0) {

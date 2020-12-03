@@ -16,15 +16,16 @@ let activities = [];
 
 $: {
   if ($page.params.folder === 'shared') {
-    activeEmails = sharedEmails;
+    activeEmails = $sharedEmails;
   } else if ($page.params.folder === 'my') {
-    activeEmails = myEmails;
+    activeEmails = $myEmails;
   } else {
-    activeEmails = emails;
+    activeEmails = $emails;
   }
 
   activities = [];
-  $activeEmails.forEach((email) => {
+//  console.log(activeEmails, activeEmails.length, $emails.length);
+  activeEmails.forEach((email) => {
     activities = activities.concat(email.activity.map(a => ({...a, email})));
   });
   activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

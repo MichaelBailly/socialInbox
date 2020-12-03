@@ -16,16 +16,13 @@ const clearNotification = (event) => {
 };
 
 const onClear = async (userNotification) => {
-  console.log('clear', userNotification);
   if (notificationsClearing) {
     return;
   }
   notificationsClearing = true;
 
   try {
-    console.log('request to /api/notifications/seen');
     const response = await post('/api/notifications/seen', { id: userNotification._id });
-    console.log(response);
   } catch(e) {
     console.log('POST /api/notifications/seen error', e);
   }
@@ -39,15 +36,13 @@ const onClearAll = async () => {
   notificationsClearing = true;
   const notification = $unreadNotifications[0];
   if (!notification) {
-    console.log('no notification');
     notificationsClearing = false;
     return false;
   }
   const date = notification.activity.date;
   try {
     console.log('request to /api/notifications/seen');
-    const response = await post('/api/notifications/seen', { lastActivityDate: date });
-    console.log(response);
+    await post('/api/notifications/seen', { lastActivityDate: date });
   } catch(e) {
     console.log('POST /api/notifications/seen error', e);
   }

@@ -29,6 +29,9 @@ const chatStatesHash = {};
 
 const loadStates = async (emailIds) => {
   const states = await post('/api/chatmessages/states', emailIds);
+  if (!states) {
+    return;
+  }
   states.forEach(
     (state) =>
       (chatStatesHash[state.emailId] = new ChatState(

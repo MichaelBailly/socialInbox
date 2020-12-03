@@ -18,11 +18,12 @@ export let showActionMenu = true;
 export let showShareMenu = true;
 export let headOnly = false;
 
-$: subject = email.email.subject || 'No subject';
-$: from = email.email.from[0] ||'unknown';
-$: to = email.email.to || [];
-$: cc = email.email.cc || [];
+$: subject = email && email.email.subject || 'No subject';
+$: from = email && email.email.from[0] ||'unknown';
+$: to = email && email.email.to || [];
+$: cc = email && email.email.cc || [];
 $: recipients = to.concat(cc);
+$: labels = email && email.labels || [];
 
 let emailId;
 let floatingMenu = false;
@@ -52,6 +53,9 @@ const onCloseMenu = (text) => {
 }
 
 afterUpdate(() => {
+  if (!email) {
+    return;
+  }
   if (emailId !== email._id) {
     markAsRead(email, $user._id);
   }
@@ -69,7 +73,7 @@ afterUpdate(() => {
       <div class="level-left">
         <div class="level-item">
           <h4 class="title is-4  is-spaced">{subject}
-            {#each email.labels as label (label._id)}
+            {#each labels as label (label._id)}
             <span class="pr-2 has-text-weight-normal"><Label {label} /></span>
           {/each}
           </h4>

@@ -3,7 +3,7 @@ import EmailViewShareForm from "./EmailViewShareForm.svelte";
 
 export let email;
 
-$: sharedUserCount = email.users.concat(email.usersShared).length;
+$: sharedUserCount = email && email.users.concat(email.usersShared).length || 1;
 
 let isVisible = false;
 

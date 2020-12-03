@@ -1,6 +1,6 @@
 <script>
 import { get } from 'api';
-import { add, endOfMonth, endOfWeek, formatDistanceToNow, isSameMonth, isSameWeek, sub } from 'date-fns';
+import { add, endOfMonth, endOfWeek, formatDistanceToNow, isSameMonth, isSameWeek } from 'date-fns';
 import { onMount } from 'svelte';
 import { writable } from 'svelte/store';
 import { lateTasks } from '../../libs/tasks/tasksProvider';
@@ -11,7 +11,6 @@ const taskList = writable([]);
 const sameWeekOpts = { weekStartsOn: 1 };
 let nextQuery;
 
-$: console.log($taskList, nextQuery);
 $: today = new Date();
 $: thisWeek = $taskList.filter(t => isSameWeek(today, t.deadline.date, sameWeekOpts));
 $: laterThisMonth = $taskList.filter(t => !isSameWeek(today, t.deadline.date, sameWeekOpts) && isSameMonth(today, t.deadline.date));

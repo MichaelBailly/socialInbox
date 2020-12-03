@@ -10,10 +10,14 @@
 	export let segment;
   export let folder;
 
-	import { emails, myEmails, sharedEmails, fetchEmails } from '../../../libs/emails/emailProvider';
+	import { emails, myEmails, sharedEmails } from '../../../libs/emails/emailProvider';
 	import EmailListItem from '../../_components/EmailListItem.svelte';
 
-  let emailsList = emails;
+	console.log('reading emails store', $emails.length);
+
+	let emailsList = emails;
+
+	console.log('emailList (before magic)', $emailsList.length);
 
   $: {
     if (folder === 'my') {
@@ -26,7 +30,8 @@
     }
   };
 
-  $: baseHref = `/inbox/${folder}`;
+	$: baseHref = `/inbox/${folder}`;
+	$: console.log('emailList (in magic)', $emailsList.length);
 </script>
 
 <svelte:head>

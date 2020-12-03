@@ -27,7 +27,7 @@ onMount(() => {
 	<title>Your tasks - SoBox</title>
 </svelte:head>
 
-{#await Promise.all([loadLabels(), fetchEmails()])}
+{#await Promise.all([loadLabels()])}
 Loading your inbox...
 {:then foo}
 <div class="columns p-0 m-0">
