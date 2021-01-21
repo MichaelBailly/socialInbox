@@ -152,13 +152,6 @@ const goBack = () => {
     .field-body {
       align-items: center;
     }
-
-    .block {
-      tasks-icon {
-
-      }
-    }
-
     .tasks {
       display: flex;
       flex-direction: row;

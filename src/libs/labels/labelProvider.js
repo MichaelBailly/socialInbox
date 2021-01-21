@@ -20,6 +20,7 @@ export async function loadLabels(fetchInstance) {
 registerEvent('label:created', (payload) => {
   labels.update((list) => {
     const newList = [...list, payload.label];
-    newList.sort((a, b) => a.name < b.name ? -1 : 1)
+    newList.sort((a, b) => a.name < b.name ? -1 : 1);
+    return newList;
   });
 });
